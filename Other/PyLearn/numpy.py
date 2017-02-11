@@ -2,7 +2,7 @@
 """
 Created on Wed Nov 30 13:31:52 2016
 
-@author: yny424
+@author: mnshr
 """
 
 import random
@@ -32,7 +32,7 @@ with open('enrollments.csv', 'rb')   as f: #check filename
     #enrollments1=list(reader) #no need to iterate over a for loop
     for row in reader:  #We can iterate over a loop only once
             enrollments.append(row)
-     
+
 with open('enrollments.csv', 'rb')   as f: #check filename
     #if with open() is used then no need to call f.close()
     reader = uc.DictReader(f)
@@ -51,8 +51,8 @@ len(unique_enrolled_students)
 
 print (len(unique_enrolled_students))
 
-#change the keyname in the list, 
-#acct_key is added, account_key still exists 
+#change the keyname in the list,
+#acct_key is added, account_key still exists
 for en in enrollments:
     en['acct_key']=en['account_key']
     del[en['acct_key']] #deleting what i added
@@ -101,7 +101,7 @@ def max_employment(countries, employment):
     max_value1=employment.max()
     print(max_country1, max_value1)
     return (max_country, max_value)
-    
+
 max_employment(countries, employment)
 employment1 = np.array([
     1, 2, 3, 4,
@@ -157,7 +157,7 @@ def mean_time_for_paid_students(time_spent, days_to_cancel):
     arr_m=time_spent[days_to_cancel>=7]
     print(arr_m.mean())
     return None
-    
+
 mean_time_for_paid_students(time_spent, days_to_cancel)
 
 #%%
