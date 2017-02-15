@@ -145,16 +145,27 @@ features = scaler.fit_transform(features)
 
 from sklearn.feature_selection import SelectKBest
 # K-best features
-k_best = SelectKBest(k=5)
+k_best = SelectKBest(k=6)
 k_best.fit(features, labels)
 
 results_list = zip(k_best.get_support(), features_list[1:], k_best.scores_)
 results_list = sorted(results_list, key=lambda x: x[2], reverse=True)
 print ("K-best features:", results_list)
 
-data = featureFormat(my_dataset, features_list, sort_keys = True)
+my_final_list=[]
+for rl in results_list:
+    print(rl)
+    if rl[0]:
+        my_final_list.append(rl)
+my_final_list = ['poi',
+                 'exercised_stock_options',
+                 'total_stock_value',
+                 'bonus',
+                 'salary',
+                 'total_payments']
+data = featureFormat(my_dataset, my_final_list, sort_keys = True)
 labels, features = targetFeatureSplit(data)
-#%%
+
 ### Task 4: Try a varity of classifiers
 ### Please name your classifier clf for easy export below.
 ### Note that if you want to do PCA or other multi-stage operations,
@@ -163,7 +174,70 @@ labels, features = targetFeatureSplit(data)
 
 # Provided to give you a starting point. Try a variety of classifiers.
 from sklearn.naive_bayes import GaussianNB
-#clf = GaussianNB()
+nb_clf = GaussianNB()
+
+from sklearn.linear_model import LogisticRegression
+l_clf = LogisticRegression(C=10**18, tol=10**-21)
+
+### K-means Clustering
+from sklearn.cluster import KMeans
+k_clf = KMeans(copy_x=True, init='k-means++', max_iter=300, n_clusters=2, n_init=10,
+       n_jobs=1, precompute_distances='auto', random_state=None, tol=0.001,
+      verbose=0)
+#KMeans(n_clusters=2, tol=0.001)
+
+### Adaboost Classifier
+from sklearn.ensemble import AdaBoostClassifier
+a_clf = AdaBoostClassifier(algorithm='SAMME')
+
+### Support Vector Machine Classifier
+from sklearn.svm import SVC
+s_clf = SVC(kernel='rbf', C=1000)
+
+### Random Forest
+from sklearn.ensemble import RandomForestClassifier
+rf_clf = RandomForestClassifier(max_depth = 5,max_features = 'sqrt',n_estimators = 10, random_state = 42)
+
+### Stochastic Gradient Descent - Logistic Regression
+from sklearn.linear_model import SGDClassifier
+g_clf = SGDClassifier(loss='log')
+
+from numpy import mean
+from sklearn import cross_validation
+from sklearn.metrics import accuracy_score, precision_score, recall_score
+def evaluate_clf(clf, features, labels, num_iters=1000, test_size=0.3):
+    print (clf)
+    accuracy = []
+    precision = []
+    recall = []
+    first = True
+    for trial in range(num_iters):
+        features_train, features_test, labels_train, labels_test =\
+            cross_validation.train_test_split(features, labels, test_size=test_size)
+        clf.fit(features_train, labels_train)
+        predictions = clf.predict(features_test)
+        accuracy.append(accuracy_score(labels_test, predictions))
+        precision.append(precision_score(labels_test, predictions))
+        recall.append(recall_score(labels_test, predictions))
+        if trial % 10 == 0:
+            if first:
+                sys.stdout.write('\nProcessing')
+            sys.stdout.write('.')
+            sys.stdout.flush()
+            first = False
+
+    print ("done.\n")
+    print ("precision: {}".format(mean(precision)))
+    print ("recall:    {}".format(mean(recall)))
+    return mean(precision), mean(recall)
+
+#evaluate_clf(nb_clf, features, labels)
+#evaluate_clf(l_clf, features, labels)
+#evaluate_clf(k_clf, features, labels)
+#evaluate_clf(a_clf, features, labels) #AdaBoost
+#evaluate_clf(s_clf, features, labels)
+#evaluate_clf(rf_clf, features, labels) #RForest
+#evaluate_clf(g_clf, features, labels)
 
 ### Task 5: Tune your classifier to achieve better than .3 precision and recall
 ### using our testing script. Check the tester.py script in the final project
@@ -173,9 +247,27 @@ from sklearn.naive_bayes import GaussianNB
 ### http://scikit-learn.org/stable/modules/generated/sklearn.cross_validation.StratifiedShuffleSplit.html
 
 # Example starting point. Try investigating other evaluation techniques!
-from sklearn.cross_validation import train_test_split
-#features_train, features_test, labels_train, labels_test = \
-#    train_test_split(features, labels, test_size=0.3, random_state=42)
+from sklearn.cross_validation import train_test_split, StratifiedShuffleSplit
+from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import classification_report
+
+# Create training sets and test sets
+features_train, features_test, labels_train, labels_test = \
+    train_test_split(features, labels, test_size=0.3, random_state=42)
+
+# Cross-validation for parameter tuning in grid search
+sss = StratifiedShuffleSplit(
+    labels_train,
+    n_iter = 20,
+    test_size = 0.5,
+    random_state = 0
+    )
+
+grid = GridSearchCV(l_clf, cv=sss)
+grid.fit(X, y)
+
+print("The best parameters are %s with a score of %0.2f"
+      % (grid.best_params_, grid.best_score_))
 
 ### Task 6: Dump your classifier, dataset, and features_list so anyone can
 ### check your results. You do not need to change anything below, but make sure
