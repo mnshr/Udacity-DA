@@ -2,7 +2,7 @@
 """
 Created on Fri Feb 24 06:32:39 2017
 
-@author: Manish
+@author: mnshr
 """
 
 """
@@ -368,6 +368,8 @@ def LinkedList(arr):
     return head
     
 def question5(ll, m):
+    if not ll:
+        return None
     #Using leading and lagging pointers in the linked list
     lead = ll
     lagg = ll
@@ -396,8 +398,13 @@ def q5_test():
     assert question5(l1, 3) == 30
     assert question5(l1, 4) == 93
     assert question5(l1, 5) == 49
-    assert question5(l1, 6) == 23 #is None
-    print l1
+    assert question5(l1, 6) == 23
+    
+    #Corner Cases
+    assert question5(None, 4) is None
+    l2 = LinkedList([])
+    assert question5(l2, 3) is None
+    #print l1
     print('---Q5---')
 
 def main():
