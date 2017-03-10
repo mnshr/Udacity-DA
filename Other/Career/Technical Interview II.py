@@ -7,9 +7,9 @@ Created on Fri Feb 24 06:32:39 2017
 
 """
 Question 1
-Given two strings s and t, determine whether some anagram of t is a substring 
-of s. For example: if s = "udacity" and t = "ad", then the function returns 
-True. Your function definition should look like: question1(s, t) and return a 
+Given two strings s and t, determine whether some anagram of t is a substring
+of s. For example: if s = "udacity" and t = "ad", then the function returns
+True. Your function definition should look like: question1(s, t) and return a
 boolean True or False.
 """
 
@@ -32,42 +32,44 @@ def question1(s, t):
     # Handle empty string
     if t == '':
         return True
-    
-    hd = 0
-    tl = hd + len(t) - 1
+
+    lagg = 0
+    lead = lagg + len(t) - 1
+    #Count the number of char in input t
     char_cnt_t = char_cnt(t)
     #print char_cnt_t
-    
-    #Count the char in array from head to tail
-    char_cnt_s = char_cnt(s[hd:tl + 1])
+
+    #Count the chars in array and store in a dictionary
+    char_cnt_s = char_cnt(s[lagg:lead + 1])
     #print char_cnt_s
-    
-    while tl < len(s):
-        #print 'tail: ', tl, ', head: ', hd, ' len(s): ', len(s)
+
+    while lead < len(s):
+        print 'Lead: ', lead, ', Lagg: ', lagg, ' len(s): ', len(s)
         #print 'char_cnt_s: ', char_cnt_s, ' || char_cnt_t: ', char_cnt_t
         if char_cnt_t == char_cnt_s:
             return True
-        #print 'char_cnt_s[s[hd]]: ', char_cnt_s[s[hd]]
-        #Remove the leading char
-        if char_cnt_s[s[hd]] == 1:
-            del char_cnt_s[s[hd]]
+        #print 'char_cnt_s[s[lagg]]: ', char_cnt_s[s[lagg]]
+        #Remove the lagging char or reduce count by 1 if count is > 1
+        if char_cnt_s[s[lagg]] == 1:
+            del char_cnt_s[s[lagg]]
         else:
-            char_cnt_s[s[hd]] -= 1
+            char_cnt_s[s[lagg]] -= 1
         #print 'char_cnt_s: ', char_cnt_s, ' || char_cnt_t: ', char_cnt_t
-        #Move head and tail forward in the string
-        hd += 1
-        tl += 1
-        if tl < len(s):
+        #Move leading and lagging pointers forward in the string
+        lead += 1
+        lagg += 1
+        if lead < len(s):
             #Get the next character
-            char_cnt_s[s[tl]] = char_cnt_s.get(s[tl], 0) + 1
+            char_cnt_s[s[lead]] = char_cnt_s.get(s[lead], 0) + 1
         else:
             return False
     return False
 
 def q1_test():
-    assert question1('udacity', 'ad') == True
-    assert question1('udacity', 'adc') == True
-    assert question1('coursera', 'or') == False
+    assert question1('udacity', 'yt') == True
+    #assert question1('udacity', 'adc') == True
+    #assert question1('coursera', 'or') == False
+    #assert question1('coursera', 'ocruesar') == True
     #Corner cases
     assert question1('Coursera', '') == True
     assert question1(None, 'cit') == False
@@ -77,7 +79,7 @@ def q1_test():
 
 """
 Question 2
-Given a string a, find the longest palindromic substring contained in a. 
+Given a string a, find the longest palindromic substring contained in a.
 Your function definition should look like question2(a), and return a string.
 """
 #Function to check if the input string is Palindrome
@@ -93,28 +95,28 @@ def question2(a):
         return None
     # Longest palindrome in an empty string is an empty string
     if a == '':
-        return ''    
+        return ''
     #print a
-    
+
     l = len(a)
     lp_len, l_idx, r_idx = 0, 0, 0
     for i in xrange(0, l):
         for j in xrange(i + 1, l + 1):
             #Create a substring for longest palindrome check
             lp_str = a[i:j]
-            #print substr
+            #print lp_str
             #Check if the current substring is palindrome and the logest so far
             if chk_pldrm(lp_str) and len(lp_str) > lp_len:
                 lp_len = len(lp_str)
                 l_idx = i
                 r_idx = j
                 #print 'longest ---> ', longest
-                
+
     #Use the indexs to create the longest substring
     lp = a[l_idx:r_idx]
     return lp
 
-def q2_test(): 
+def q2_test():
     assert question2('zusnantpr') == 'nan'
     assert question2('ayananaya') == 'ayananaya'
     assert question2("abcCIVVICdef") == 'CIVVIC'
@@ -126,15 +128,15 @@ def q2_test():
 
 """
 Question 3
-Given an undirected graph G, find the minimum spanning tree within G. 
-A minimum spanning tree connects all vertices in a graph with the smallest 
-possible total weight of edges. Your function should take in and return an 
+Given an undirected graph G, find the minimum spanning tree within G.
+A minimum spanning tree connects all vertices in a graph with the smallest
+possible total weight of edges. Your function should take in and return an
 adjacency list structured like this:
 
 {'A': [('B', 2)],
- 'B': [('A', 2), ('C', 5)], 
+ 'B': [('A', 2), ('C', 5)],
  'C': [('B', 5)]}
-Vertices are represented as unique strings. The function definition should be 
+Vertices are represented as unique strings. The function definition should be
 question3(G)
 """
 
@@ -144,7 +146,7 @@ def question3(g):
         return None
 
     #Dict to store the adjacency list
-    adj_list = {}  
+    adj_list = {}
     #Store here the nodes visited
     visited_nodes = []
     tmp = []
@@ -190,12 +192,12 @@ def q3_test():
         'C': [('B', 5)],
         'D': [('A', 1), ('C', 4)]
     }
-    
-    mst = {'A': [('D', 1), ('B', 2)], 
-    'C': [('D', 4)], 
-    'B': [('A', 2)], 
+
+    mst = {'A': [('D', 1), ('B', 2)],
+    'C': [('D', 4)],
+    'B': [('A', 2)],
     'D': [('A', 1), ('C', 4)]}
-    
+
     a1 = {'A': [('B', 7), ('D', 5)],
          'B': [('A', 7), ('C', 8), ('D', 9)],
          'C': [('B', 8), ('E', 5)],
@@ -203,26 +205,26 @@ def q3_test():
          'E': [('C', 5), ('D', 15), ('F', 8), ('G', 9)],
          'F': [('D', 6), ('E', 8), ('G', 11)],
          'G': [('E', 9), ('F', 11)]}
-    
-    mst1 = {'A': [('D', 5), ('B', 7)], 
-    'C': [('E', 5)], 
-    'B': [('A', 7)], 
-    'E': [('F', 8), ('C', 5), ('G', 9)], 
-    'D': [('F', 6), ('A', 5)], 
-    'G': [('E', 9)], 
+
+    mst1 = {'A': [('D', 5), ('B', 7)],
+    'C': [('E', 5)],
+    'B': [('A', 7)],
+    'E': [('F', 8), ('C', 5), ('G', 9)],
+    'D': [('F', 6), ('A', 5)],
+    'G': [('E', 9)],
     'F': [('D', 6), ('E', 8)]}
-    
+
     a2 = {}
-    
+
     a3 = {'A': [('B', 2)],
                  'B': [('A', 2), ('C', 5), ('D', 3)],
                  'C': [('B', 5), ('D', 4)],
                  'D': [('C', 4), ('B', 3)]}
-    mst3 = {'A': [('B', 2)], 
-    'C': [('D', 4)], 
-    'B': [('D', 3), ('A', 2)], 
+    mst3 = {'A': [('B', 2)],
+    'C': [('D', 4)],
+    'B': [('D', 3), ('A', 2)],
     'D': [('B', 3), ('C', 4)]}
-    
+
     assert question3(a) == mst
     assert question3(a1)==mst1
     assert question3(a3) == mst3
@@ -234,17 +236,17 @@ def q3_test():
 
 """
 Question 4
-Find the least common ancestor between two nodes on a binary search tree. 
-The least common ancestor is the farthest node from the root that is an 
-ancestor of both nodes. For example, the root is a common ancestor of all 
+Find the least common ancestor between two nodes on a binary search tree.
+The least common ancestor is the farthest node from the root that is an
+ancestor of both nodes. For example, the root is a common ancestor of all
 nodes on the tree, but if both nodes are descendents of the root's left child,
 then that left child might be the lowest common ancestor. You can assume that
 both nodes are in the tree, and the tree itself adheres to all BST properties.
-The function definition should look like question4(T, r, n1, n2), where T is 
-the tree represented as a matrix, where the index of the list is equal to the 
-integer stored in that node and a 1 represents a child node, r is a 
+The function definition should look like question4(T, r, n1, n2), where T is
+the tree represented as a matrix, where the index of the list is equal to the
+integer stored in that node and a 1 represents a child node, r is a
 non-negative integer representing the root, and n1 and n2 are non-negative
-integers representing the two nodes in no particular order. For example, one 
+integers representing the two nodes in no particular order. For example, one
 test case might be
 
 question4([[0, 1, 0, 0, 0],
@@ -256,7 +258,7 @@ question4([[0, 1, 0, 0, 0],
           1,
           4)
 and the answer would be 3.
-"""        
+"""
 class Node_tree(object):
     def __init__(self, value):
         self.left = None
@@ -273,7 +275,7 @@ def create_tree(T, node):
                 node.right = i
                 #Recurse to add nodes below, if they exist
                 create_tree(T, Node_tree(i))
-        
+
             # Add child to the left if its value is smaller
             if i < node.value:
                 #print 'Adding ', i, ' to left of ', node.value
@@ -281,19 +283,27 @@ def create_tree(T, node):
                 #Recurse to add nodes below, if they exist
                 create_tree(T, Node_tree(i))
 
-def find_lca(root, n1, n2):
+def find_lca(T, root, n1, n2):
     if root == None:
         return None
-    #print root.value, n1, n2
+    #print root, n1, n2
+
+    for i, j in enumerate(T[root]):
+        if j == 1:
+            if i > root:
+                right_idx = i
+            else:
+                left_idx = i
+        
     # Search recursively for least common ancestor in the left
-    if(root.value > n1 and root.value > n2):
-        return find_lca(root.left, n1, n2)
- 
-    # Search recursively for lca in the right
-    if(root.value < n1 and root.value < n2):
-        return find_lca(root.right, n1, n2)
- 
-    return root.value 
+    if(root > n1 and root > n2):
+        return find_lca(T, left_idx, n1, n2)
+
+    # Search recursively for lca in the right subtree
+    if(root < n1 and root < n2):
+        return find_lca(T, right_idx, n1, n2)
+
+    return root
 
 def question4(T, r, n1, n2):
     # Sanity checks
@@ -301,22 +311,22 @@ def question4(T, r, n1, n2):
         return None
     if r < 0 or n1 < 0 or n2 < 0:
         return None
-    
-    # Create a root node for the tree
-    root = Node_tree(r)
-    
-    # Create binary search tree from given 2D array
-    create_tree(T, root)
-    
-    # Return the least common ancestor
-    return find_lca(root, n1, n2)
 
-def q4_test():                    
+    # Create a root node for the tree
+    #root = Node_tree(r)
+
+    # Create binary search tree from given 2D array
+    #create_tree(T, root)
+
+    # Return the least common ancestor
+    return find_lca(T, r, n1, n2)
+
+def q4_test():
     T1 =[[0, 1, 0, 0, 0],
          [0, 0, 0, 0, 0],
          [0, 0, 0, 0, 0],
          [1, 0, 0, 0, 1],
-         [0, 0, 0, 0, 0]] 
+         [0, 0, 0, 0, 0]]
     assert question4(T1, 3, 1, 4) == 3
     T2 = [[0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0],
@@ -335,15 +345,15 @@ def q4_test():
     assert question4(None, None, None, None) is None
     assert question4(T1, -1, 2, 3) == None
     assert question4([], None, None, None) is None
-    
+
     print('---Q4---')
 
 """
 Question 5
-Find the element in a singly linked list that's m elements from the end. 
-For example, if a linked list has 5 elements, the 3rd element from the end is 
-the 3rd element. The function definition should look like question5(ll, m), 
-where ll is the first node of a linked list and m is the "mth number from the 
+Find the element in a singly linked list that's m elements from the end.
+For example, if a linked list has 5 elements, the 3rd element from the end is
+the 3rd element. The function definition should look like question5(ll, m),
+where ll is the first node of a linked list and m is the "mth number from the
 end". You should copy/paste the Node class below to use as a representation of
  a node in the linked list. Return the value of the node at that position.
 """
@@ -359,14 +369,14 @@ def LinkedList(arr):
         # Create the head node
         head = Node_ll(arr[0])
         current = head
-        # Add more nodes if given 
+        # Add more nodes if given
         if len(arr) > 1:
             for a in arr[1:]:
                 # Add the node as next element
                 current.next = Node_ll(a)
                 current = current.next
     return head
-    
+
 def question5(ll, m):
     if not ll:
         return None
@@ -399,7 +409,7 @@ def q5_test():
     assert question5(l1, 4) == 93
     assert question5(l1, 5) == 49
     assert question5(l1, 6) == 23
-    
+
     #Corner Cases
     assert question5(None, 4) is None
     l2 = LinkedList([])
@@ -408,13 +418,12 @@ def q5_test():
     print('---Q5---')
 
 def main():
-   q1_test()
-   q2_test()
-   q3_test()
+   #q1_test()
+   #q2_test()
+   #q3_test()
    q4_test()
-   q5_test()
+   #q5_test()
 
 
 if __name__ == '__main__':
     main()
-    
