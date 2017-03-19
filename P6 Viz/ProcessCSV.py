@@ -37,8 +37,32 @@ for v in dt_df:
     #if i > 200:
     #    break
 df2=df.assign(Quarter=qt_df)
-grp_loans_by_credit=df2.groupby(['Quarter', 'CreditGrade'])['ListingKey'].count()
-grp_loans_by_list=df2.groupby(['Quarter', 'ListingCategory (numeric)'])['ListingKey'].count()
-grp_prin_by_credit=df2.groupby(['Quarter', 'CreditGrade'])['ProsperPrincipalBorrowed'].mean()
-grp_cat_by_list=df2.groupby(['Quarter', 'ListingCategory (numeric)'])['ProsperPrincipalBorrowed'].mean()
+quarters=df2.groupby('Quarter')
+grp_loans_by_credit_pre2009=df2.groupby(['Quarter', 'CreditGrade'])['ListingKey'].count()
+grp_loans_by_credit_pre2009.to_csv("grp_loans_by_credit_pre2009.csv")
+grp_loans_by_credit_post2009=df2.groupby(['Quarter', 'ProsperRating (Alpha)'])['ListingKey'].count()
+grp_loans_by_credit_post2009.to_csv("grp_loans_by_credit_post2009.csv")
+grp_loans_by_cat=df2.groupby(['Quarter', 'ListingCategory (numeric)'])['ListingKey'].count()
+grp_loans_by_cat.to_csv("grp_loans_by_cat.csv")
+
+grp_prin_by_credit_pre2009=df2.groupby(['Quarter', 'CreditGrade'])['ProsperPrincipalBorrowed'].mean()
+grp_prin_by_credit_pre2009.to_csv("grp_prin_by_credit_pre2009.csv")
+grp_prin_by_credit_post2009=df2.groupby(['Quarter', 'ProsperRating (Alpha)'])['ProsperPrincipalBorrowed'].mean()
+grp_prin_by_credit_post2009.to_csv("grp_prin_by_credit_post2009.csv")
+grp_prin_by_cat=df2.groupby(['Quarter', 'ListingCategory (numeric)'])['ProsperPrincipalBorrowed'].mean()
+grp_prin_by_cat.to_csv("grp_prin_by_cat.csv")
+
+grp_dti_by_credit_pre2009=df2.groupby(['Quarter', 'CreditGrade'])['DebtToIncomeRatio'].mean()
+grp_dti_by_credit_pre2009.to_csv("grp_dti_by_credit_pre2009.csv")
+grp_dti_by_credit_post2009=df2.groupby(['Quarter', 'ProsperRating (Alpha)'])['DebtToIncomeRatio'].mean()
+grp_dti_by_credit_post2009.to_csv("grp_dti_by_credit_post2009.csv")
+grp_dti_by_cat=df2.groupby(['Quarter', 'ListingCategory (numeric)'])['DebtToIncomeRatio'].mean()
+grp_dti_by_cat.to_csv("grp_dti_by_cat.csv")
+
+grp_inc_by_credit_pre2009=df2.groupby(['Quarter', 'CreditGrade'])['StatedMonthlyIncome'].mean()
+grp_inc_by_credit_pre2009.to_csv("grp_inc_by_credit_pre2009.csv")
+grp_inc_by_credit_post2009=df2.groupby(['Quarter', 'ProsperRating (Alpha)'])['StatedMonthlyIncome'].mean()
+grp_inc_by_credit_post2009.to_csv("grp_inc_by_credit_post2009.csv")
+grp_inc_by_cat=df2.groupby(['Quarter', 'ListingCategory (numeric)'])['StatedMonthlyIncome'].mean()
+grp_inc_by_cat.to_csv("grp_inc_by_cat.csv")
 #quarter = pd.Timestamp(dt.date(2016, 2, 29)).quarter
