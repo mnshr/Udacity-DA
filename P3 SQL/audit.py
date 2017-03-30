@@ -25,6 +25,7 @@ OSMFILE = "raleigh-sample.osm"
 #OSMFILE = "raleigh_North-Carolina.osm"
 street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 post_re=re.compile(r'^\D*(\d{5}).*', re.IGNORECASE) #^\D*(\d{5}).*
+phone_re=re.compile(r'\d{3}\s\d{3}\s\d{4}', re.IGNORECASE)
 
 expected = ["Street", "Avenue", "Boulevard", 
             "Drive", "Court", "Place", 
@@ -55,18 +56,24 @@ def audit_postcode(postcodes, code):
     if not re.match(r'^\d{5}$', code):
         postcodes[code] += 1
         
+def audit_phone(phone, code):
+    if not phone_re.match(code):
+        phone[code] += 1
+    
 def is_street_name(elem):
-    #print elem.attrib['k']
     return (elem.attrib['k'] == "addr:street")
 
 def is_postcode(elem):
-    #print elem.attrib['k']
     return (elem.attrib['k'] == "addr:postcode")
+
+def is_phone(elem):
+    return ((elem.attrib['k']=="phone") or (elem.attrib['k']=="contact:phone"))
 
 def audit(osmfile):
     osm_file = open(osmfile, "r")
     street_types = defaultdict(set)
     postcodes = defaultdict(int)
+    phones = defaultdict(int)
     
     for event, elem in ET.iterparse(osm_file, events=("start",)):
 
@@ -77,11 +84,13 @@ def audit(osmfile):
                 if is_postcode(tag):
                     #print "Check postcode: ", tag.attrib['v']
                     audit_postcode(postcodes, tag.attrib['v'])
+                if is_phone(tag):
+                    audit_phone(phones, tag.attrib['v'])
     osm_file.close()
     print '----------------'
-    pprint.pprint(postcodes)
+    pprint.pprint(phones)
     print '----------------'
-    return street_types, postcodes
+    return street_types, postcodes, phones
 
 
 def update_name(name, mapping):
@@ -92,16 +101,53 @@ def update_name(name, mapping):
     return name
 
 def update_postcode(postcode):
-    search = re.match(r'^\D*(\d{5}).*', postcode)
-    valid_postcode=search.group(1)
-    return valid_postcode
+    if postcode:
+        search = post_re.match(postcode)
+        valid_postcode=search.group(1)
+        return valid_postcode
+
+def update_phone(phone):
+    #print phone
+    if phone:
+        phone_m=phone_re.match(phone)
+        #phone=search.group(1)
+        if phone_m is None:
+            # Convert all dashes to spaces
+            if "-" in phone:
+                phone = re.sub("-", " ", phone)
+            #if "  " in phone:
+            #    phone = re.sub("  ", " ", phone)
+            # Remove all brackets
+            if "(" in phone or ")" in phone:
+                phone = re.sub("[()]", "", phone)
+            
+            # Space out 10 straight numbers
+            if re.search(r'\d{10}', phone):
+                phone = phone[:3] + " " + phone[3:6] + " " + phone[6:]
+            # Space out 11 straight numbers
+            elif re.search(r'\d{11}', phone):
+                phone = phone[:1] + " " + phone[1:4] + " " + phone[4:7] + " " + phone[7:]
+            #elif re.match(r'\d{1}\s\d{3}\s\d{7}', phone) is not None:
+            elif re.search(r'\s?(\d{1}\s?\d{3}\s?\d{7})', phone):
+                phone = phone[:10] + " " + phone[10:] 
+                print phone
+                
+            # Add full country code
+            if re.match(r'\d{3}\s\d{3}\s\d{4}', phone) is not None:
+                phone = "+1 " + phone
+            # Add + in country code
+            elif re.match(r'1\s\d{3}\s\d{3}\s\d{4}', phone) is not None:
+                phone = "+" + phone
+            
+        return phone
 
 def test_audit(filename):
-    st_types, post_types = audit(filename)
+    st_types, post_types, phone_types = audit(filename)
     #assert len(st_types) == 3
     #pprint.pprint(dict(st_types))
-    print '---printing postcode dict for cleaning---'
-    pprint.pprint(dict(post_types))
+    #print '---printing postcode & phones dicts for cleaning---'
+    #pprint.pprint(dict(post_types))
+    #pprint.pprint(dict(phone_types))
 
     for st_type, ways in st_types.iteritems():
         for name in ways:
@@ -115,6 +161,10 @@ def test_audit(filename):
     for item in post_types:
         cleaned = update_postcode(item)
         print cleaned
+    
+    for item in phone_types:
+        cleaned_phone = update_phone(item)
+        print cleaned_phone
         
 if __name__ == '__main__':
     test_audit(OSMFILE)
