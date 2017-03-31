@@ -21,27 +21,39 @@ from collections import defaultdict
 import re
 import pprint
 
-OSMFILE = "raleigh-sample.osm"
-#OSMFILE = "raleigh_North-Carolina.osm"
+#OSMFILE = "raleigh-sample.osm"
+OSMFILE = "raleigh_north-carolina.osm"
 street_type_re = re.compile(r'\b\S+\.?$', re.IGNORECASE)
 post_re=re.compile(r'^\D*(\d{5}).*', re.IGNORECASE) #^\D*(\d{5}).*
 phone_re=re.compile(r'\d{3}\s\d{3}\s\d{4}', re.IGNORECASE)
 
-expected = ["Street", "Avenue", "Boulevard", 
-            "Drive", "Court", "Place", 
-            "Square", "Lane", "Road", 
-            "Trail", "Parkway", "Commons"]
+expected = ["Street", "Avenue", "Boulevard", "Extension",
+            "Drive", "Court", "Place", "Bypass", "Crossing",
+            "Square", "Lane", "Road", "Alley", "West",
+            "Trail", "Parkway", "Commons", "Circle", 
+            "Run", "Ridge", "Plaza", "Loop", "Crescent"]
 
 # UPDATE THIS VARIABLE
-mapping = {"St": "Street", "St.": "Street", "street": "Street", 
+mapping = {"St": "Street", "St.": "Street", "street": "Street", "ST": "Street", "St,": "Street",
             "Ave": "Avenue", "Ave.": "Avenue", "Avene": "Avenue", "Avene.": "Avenue",
-            "Rd": "Road", "Rd.": "Road", "Pkwy": "Parkway", 'Pkwy.': "Parkway",
+            "Rd": "Road", "Rd.": "Road", "Pkwy": "Parkway", 'Pkwy.': "Parkway", "Pky": "Pkwy",
             "Ln": "Lane", "Ln.": "Lane", "lane": "Lane",
             "Hwy": "Highway", "Hwy.": "Highway", "HWY": "Highway",
             "Expwy": "Expressway", "Expwy.": "Expressway",
-            "Dr": "Drive", "Dr.": "Drive", "Blvd": "Boulevard", "Blvd.": "Boulevard", "N.": "North",
-            "Cir": "Circle"}
+            "Dr": "Drive", "Dr.": "Drive", "Driver": "Drive", 
+            "Blvd": "Boulevard", "Blvd.": "Boulevard", "N.": "North",
+            "Cir": "Circle", "CIrcle": "Circle", "Ct": "Court",
+            "Ext": "Extension", "LaurelcherryStreet": "Laurelcherry Street",
+            "Pl": "Place", "PI": "Place"}
 
+def is_street_name(elem):
+    return (elem.attrib['k'] == "addr:street")
+
+def is_postcode(elem):
+    return (elem.attrib['k'] == "addr:postcode")
+
+def is_phone(elem):
+    return ((elem.attrib['k']=="phone") or (elem.attrib['k']=="contact:phone"))
 
 def audit_street_type(street_types, street_name):
     m = street_type_re.search(street_name)
@@ -60,15 +72,6 @@ def audit_phone(phone, code):
     if not phone_re.match(code):
         phone[code] += 1
     
-def is_street_name(elem):
-    return (elem.attrib['k'] == "addr:street")
-
-def is_postcode(elem):
-    return (elem.attrib['k'] == "addr:postcode")
-
-def is_phone(elem):
-    return ((elem.attrib['k']=="phone") or (elem.attrib['k']=="contact:phone"))
-
 def audit(osmfile):
     osm_file = open(osmfile, "r")
     street_types = defaultdict(set)
@@ -79,16 +82,16 @@ def audit(osmfile):
 
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
-                if is_street_name(tag):
-                    audit_street_type(street_types, tag.attrib['v'])
+     #           if is_street_name(tag):
+      #              audit_street_type(street_types, tag.attrib['v'])
                 if is_postcode(tag):
                     #print "Check postcode: ", tag.attrib['v']
                     audit_postcode(postcodes, tag.attrib['v'])
-                if is_phone(tag):
-                    audit_phone(phones, tag.attrib['v'])
+    #            if is_phone(tag):
+    #                audit_phone(phones, tag.attrib['v'])
     osm_file.close()
     print '----------------'
-    pprint.pprint(phones)
+    #pprint.pprint(phones)
     print '----------------'
     return street_types, postcodes, phones
 
@@ -102,8 +105,8 @@ def update_name(name, mapping):
 
 def update_postcode(postcode):
     if postcode:
-        search = post_re.match(postcode)
-        valid_postcode=search.group(1)
+        found = post_re.match(postcode)
+        valid_postcode=found.group(1)
         return valid_postcode
 
 def update_phone(phone):
@@ -146,7 +149,7 @@ def test_audit(filename):
     #assert len(st_types) == 3
     #pprint.pprint(dict(st_types))
     #print '---printing postcode & phones dicts for cleaning---'
-    #pprint.pprint(dict(post_types))
+    pprint.pprint(dict(post_types))
     #pprint.pprint(dict(phone_types))
 
     for st_type, ways in st_types.iteritems():
@@ -157,7 +160,7 @@ def test_audit(filename):
                 assert better_name == "West Lexington Street"
             if name == "Baldwin Rd.":
                 assert better_name == "Baldwin Road"
-
+"""
     for item in post_types:
         cleaned = update_postcode(item)
         print cleaned
@@ -165,6 +168,6 @@ def test_audit(filename):
     for item in phone_types:
         cleaned_phone = update_phone(item)
         print cleaned_phone
-        
+"""     
 if __name__ == '__main__':
     test_audit(OSMFILE)
