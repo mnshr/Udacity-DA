@@ -81,17 +81,15 @@ def audit(osmfile):
 
         if elem.tag == "node" or elem.tag == "way":
             for tag in elem.iter("tag"):
-     #           if is_street_name(tag):
-      #              audit_street_type(street_types, tag.attrib['v'])
-      #          if is_postcode(tag):
+                if is_street_name(tag):
+                    audit_street_type(street_types, tag.attrib['v'])
+                if is_postcode(tag):
                     #print "Check postcode: ", tag.attrib['v']
-       #             audit_postcode(postcodes, tag.attrib['v'])
+                    audit_postcode(postcodes, tag.attrib['v'])
                 if is_phone(tag):
                     audit_phone(phones, tag.attrib['v'])
     osm_file.close()
-    print '----------------'
-    #pprint.pprint(phones)
-    print '----------------'
+    pprint.pprint(phones)
     return street_types, postcodes, phones
 
 
@@ -103,11 +101,14 @@ def update_name(name, mapping):
     return name
 
 def update_postcode(postcode):
-    if postcode:
+    if post_re.search(postcode):
         found = post_re.match(postcode)
         valid_postcode=found.group(1)
         return valid_postcode
-
+    else:
+        # Return a default postcode if no 5 digit number found 
+        return "27601"
+        
 def update_phone(phone):
     if phone:
         # Look for the phone number matching the regular expression
@@ -146,12 +147,12 @@ def test_audit(filename):
     pprint.pprint(dict(phone_types))
     for item in phone_types:
         cleaned_phone = update_phone(item)
-        #print cleaned_phone
+        print cleaned_phone
 
     for st_type, ways in st_types.iteritems():
         for name in ways:
             better_name = update_name(name, mapping)
-            #print name, "=>", better_name
+            print name, "=>", better_name
             if name == "West Lexington St.":
                 assert better_name == "West Lexington Street"
             if name == "Baldwin Rd.":
