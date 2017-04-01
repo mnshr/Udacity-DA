@@ -1,4 +1,4 @@
-Exploring Prosper Loan Data by Manish Hira
+Exploring Prosper Loan Data by MNSHR
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
@@ -56,6 +56,8 @@ library(ggplot2)
 
 
 # Multivariate Plots Section
+
+#### Tip: Even when doing exploration, it can be good to select appropriate color palettes and set plot themes in order to make plots more readable. (The above plots use sequential color palettes from the RColorBrewer package; other variables might require qualitative or diverging palettes.)
 
 ```{r echo=FALSE, Multivariate_Plots}
 
