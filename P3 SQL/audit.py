@@ -64,7 +64,6 @@ def audit_street_type(street_types, street_name):
 
 def audit_postcode(postcodes, code):
     #if not re.match(r'^\D*(\d{5}).*', code):
-    print code
     if not re.match(r'^\d{5}$', code):
         postcodes[code] += 1
         
@@ -84,11 +83,11 @@ def audit(osmfile):
             for tag in elem.iter("tag"):
      #           if is_street_name(tag):
       #              audit_street_type(street_types, tag.attrib['v'])
-                if is_postcode(tag):
+      #          if is_postcode(tag):
                     #print "Check postcode: ", tag.attrib['v']
-                    audit_postcode(postcodes, tag.attrib['v'])
-    #            if is_phone(tag):
-    #                audit_phone(phones, tag.attrib['v'])
+       #             audit_postcode(postcodes, tag.attrib['v'])
+                if is_phone(tag):
+                    audit_phone(phones, tag.attrib['v'])
     osm_file.close()
     print '----------------'
     #pprint.pprint(phones)
@@ -110,35 +109,29 @@ def update_postcode(postcode):
         return valid_postcode
 
 def update_phone(phone):
-    #print phone
     if phone:
+        # Look for the phone number matching the regular expression
         phone_m=phone_re.match(phone)
-        #phone=search.group(1)
+
         if phone_m is None:
-            # Convert all dashes to spaces
+            # substitute hyphens and remove brackets
             if "-" in phone:
                 phone = re.sub("-", " ", phone)
-            #if "  " in phone:
-            #    phone = re.sub("  ", " ", phone)
-            # Remove all brackets
-            if "(" in phone or ")" in phone:
+            elif "(" in phone or ")" in phone:
                 phone = re.sub("[()]", "", phone)
             
-            # Space out 10 straight numbers
+            # Search for 10/11 digits phone numbers and add spaces in between area codes
             if re.search(r'\d{10}', phone):
                 phone = phone[:3] + " " + phone[3:6] + " " + phone[6:]
-            # Space out 11 straight numbers
             elif re.search(r'\d{11}', phone):
                 phone = phone[:1] + " " + phone[1:4] + " " + phone[4:7] + " " + phone[7:]
-            #elif re.match(r'\d{1}\s\d{3}\s\d{7}', phone) is not None:
+            # Handle cases where there are last 7 digits grouped 
             elif re.search(r'\s?(\d{1}\s?\d{3}\s?\d{7})', phone):
                 phone = phone[:10] + " " + phone[10:] 
-                print phone
                 
-            # Add full country code
+            # USA code with a + mark
             if re.match(r'\d{3}\s\d{3}\s\d{4}', phone) is not None:
                 phone = "+1 " + phone
-            # Add + in country code
             elif re.match(r'1\s\d{3}\s\d{3}\s\d{4}', phone) is not None:
                 phone = "+" + phone
             
@@ -147,10 +140,13 @@ def update_phone(phone):
 def test_audit(filename):
     st_types, post_types, phone_types = audit(filename)
     #assert len(st_types) == 3
-    #pprint.pprint(dict(st_types))
+    pprint.pprint(dict(st_types))
     #print '---printing postcode & phones dicts for cleaning---'
     pprint.pprint(dict(post_types))
-    #pprint.pprint(dict(phone_types))
+    pprint.pprint(dict(phone_types))
+    for item in phone_types:
+        cleaned_phone = update_phone(item)
+        #print cleaned_phone
 
     for st_type, ways in st_types.iteritems():
         for name in ways:
@@ -160,14 +156,10 @@ def test_audit(filename):
                 assert better_name == "West Lexington Street"
             if name == "Baldwin Rd.":
                 assert better_name == "Baldwin Road"
-"""
+
     for item in post_types:
         cleaned = update_postcode(item)
         print cleaned
-    
-    for item in phone_types:
-        cleaned_phone = update_phone(item)
-        print cleaned_phone
-"""     
+
 if __name__ == '__main__':
     test_audit(OSMFILE)
