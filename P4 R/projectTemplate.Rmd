@@ -1,4 +1,4 @@
-TITLE by YOUR_NAME_HERE
+Exploring Prosper Loan Data by Manish Hira
 ========================================================
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
@@ -21,6 +21,8 @@ library(ggplot2)
 ```{r echo=FALSE, Univariate_Plots}
 
 ```
+####  Tip When plotting on a log scale, it is useful to note that 3 is about halfway between 1 and 10. As a side note, try not to plot counts on a log scale since counts of 0 are undefined and counts of 1 have a value of 0 (no height).
+##### Tip: You can change the height and width of plots in code chunks with the fig.height and fig.width parameters in the chunk options.
 
 # Univariate Analysis
 
@@ -35,13 +37,14 @@ library(ggplot2)
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 
 
-
 # Bivariate Plots Section
 ```{r echo=FALSE, Bivariate_Plots}
 
 ```
 
 # Bivariate Analysis
+
+#### Tip: Be mindful of the number of data points and variables that you put in a correlation matrix or plot matrix: you do not need to include all variables. In addition, you can use other packages not introduced in the associated course to conduct your exploration. Make sure you load them at the beginning of your document so that it is easiest to see which packages are necessary. (The above plot matrix comes from the psych package.)
 
 ### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
 
@@ -66,10 +69,12 @@ library(ggplot2)
 
 ### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
 
+#### Tip: Note that performing statistical tests and creating data models are not a required component of the project. Below, the mtable() call uses 'sdigits = 3' to make sure that three digits are printed after the decimal point in the summary statistics.
+
 ------
 
 # Final Plots and Summary
-
+#### Tip: Polish up the plots that you explored earlier in the report in the final plots section. Make sure you label and title the plots, and provide a description of what can be observed in each of the chosen plots.
 ### Plot One
 ```{r echo=FALSE, Plot_One}
 
