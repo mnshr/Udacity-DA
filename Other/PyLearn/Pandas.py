@@ -145,7 +145,7 @@ def reverseName(str):
     print(s2)
     return(s2+', '+s1)
     
-s1='Manish Hira'
+s1='MNSHR'
 print(reverseName(s1))
 
 def reverse_names(names):
