@@ -22,12 +22,6 @@ str(pf) # Get the structure of data
 dim(pf) # Get the size
 names(pf) #Get all columns
 
-qplot(x=BorrowerState
-    , data=pf, 
-      xlab='State',
-      ylab='Number of users in sample',
-      color=I('black'), fill = I('orange'), binwidth=1) +
-    scale_x_continuous(breaks=seq(0,113,20), limits=c(0,150))
 ggplot(aes(x = LoanOriginalAmount), data = pf) + 
   geom_histogram(binwidth = 100, fill = '#5760AB') + 
   scale_x_continuous(breaks = seq(0, 113, 5))
