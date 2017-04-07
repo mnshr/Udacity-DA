@@ -10,22 +10,40 @@ Exploring Prosper Loan Data by MNSHR
 # You should set echo=FALSE for all code chunks in your file.
 
 library(ggplot2)
+library(gridExtra)
+library(dplyr)
+library(RColorBrewer)
+library(ellipse)
+library(reshape)
+library(memisc)
+library(scales)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
-setwd("C:/Users/Manish/workspace/Udacity-DA/P4\ R")
-getwd()
-# Load the Data
-pf <- read.csv('./prosperLoanData.csv', sep=',')
-head(pf, 10)
-str(pf) # Get the structure of data
-dim(pf) # Get the size
-names(pf) #Get all columns
 
-ggplot(aes(x = LoanOriginalAmount), data = pf) + 
-  geom_histogram(binwidth = 100, fill = '#5760AB') + 
+# Load the Data
+pd <- read.csv('./prosperLoanData.csv', sep=',')
+head(pd, 10)
+str(pd) # Get the structure of data
+dim(pd) # Get the size
+names(pd) #Get all columns
+
+ggplot(aes(x = LoanOriginalAmount), data = pd) + 
+  geom_histogram(binwidth = 1000, fill = '#5760AB') + 
   scale_x_continuous(breaks = seq(0, 113, 5))
 
+summary(pd$StatedMonthlyIncome)
+  ggplot(data=pd,aes(StatedMonthlyIncome)) +       
+  geom_histogram(binwidth=500, color=I('black'), fill=I("#c5831d") ) + 
+  xlim(0,10000)
+summary(pd$StatedMonthlyIncome)
+
+ggplot(data=pd,aes(Term)) + 
+  geom_bar(color=I('black'),fill=I('#78D20b'))
+
+ggplot(data=pd,aes(MonthlyLoanPayment))+
+  geom_histogram(binwidth=50,color=I('black'),fill=I('#56B4E9'))+
+  scale_x_continuous(limits=c(0,2252),breaks=seq(0,2252,100))
 ```
 
 # Univariate Plots Section
@@ -39,11 +57,26 @@ ggplot(aes(x = LoanOriginalAmount), data = pf) +
 
 ### What is the structure of your dataset?
 
+A cursory look at all the variables shows that all the variables could be part of a model to determine a measure of risk involved for each loan entry. And based on individual data per customer one could create another model to determine the credit rating of a borrower. At a macro level we could also determine the state of peer to peer lending business from the perspective of Prosper. 
+
 ### What is/are the main feature(s) of interest in your dataset?
+
+When I use popular credit related apps such as CreditKarma and CreditWise I am shown some of the factors that determine my credit rating, these factors include - Oldest credit line, % of credit used, available credit across all credit lines, number of credit enquiries, number of accounts opened and closed, on time payments. This sounds much simpler than the number of variables at hand in the Prosper loan data. Hence I tried to categorize all the 81 variables in broad categories as per my own understanding of the credit industry. The categories and respective variables of my interest include:
+  Credit - CreditScoreRangeLower, CreditScoreRangeUpper, FirstRecordedCreditLine, TotalCreditLinespast7years, ProsperRating, ProsperScore
+  Lender - LenderYield, EstimatedReturn
+  Borrower - BorrowerRate, Occupation, EmploymentStatus, TotalInquiries, CurrentDeliquencies, RevolvingCreditBalance, OnTimeProsperPayments, DebtToIncomeRatio, IncomeRange
+  Loan - Term, LoanStatus, ProsperPrincipalBorrowed, LoanOriginationDate, LoanMonthsSinceOrigination, MonthlyLoanPayment, PercentFunded, ListingCategory
 
 ### What other features in the dataset do you think will help support your investigation into your feature(s) of interest?
 
+  Borrower - StatedMonthlyIncome, InvestmentFromFriendsCount, InvestmentFromFriendsAmount, BorrowerState, AmountDelinquent, InquiriesLast6Months, DelinquenciesLast7Years, TradesNeverDelinquent, BankcardUtilization, IsBorrowerHomeOwner
+
 ### Did you create any new variables from existing variables in the dataset?
+
+* CreditScoreRange by combining the Lower and Upper and taking an average
+* Since there are a large number of ListingCategory types, I logically grouped them into 5 and created ListingCategories5.
+* Occupation grouped together to create smaller number of categories - Occupation5
+* Combined ProsperRating and ProsperScore
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
 
