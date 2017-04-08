@@ -1,7 +1,16 @@
-Exploring Prosper Loan Data by MNSHR
+# Exploring Prosper Loan Data by MNSHR
 ========================================================
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+This project analyzes the loan data provided by Prosper (www.prosper.com) a 
+peer to peer lending platform. The feature description about the dataset can
+be found at:
+A variable dictionary can be found here: https://docs.google.com/spreadsheets/d/1gDyi_L4UvIrLTEC6Wri5nbaMmkGmLQBk-Yx3z0XDEtI/edit#gid=0.
+
+I will perform three types of analyses, Univariate, Bivariate and Multivariate
+using preselected variables among the 81 that are part of the dataset and
+reflect on my findings in the concluding section. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', packages}
 # Load all of the packages that you end up using
 # in your analysis in this code chunk.
 
@@ -13,13 +22,15 @@ library(ggplot2)
 library(gridExtra)
 library(dplyr)
 library(RColorBrewer)
-library(ellipse)
+#library(ellipse)
 library(reshape)
 library(memisc)
 library(scales)
+library(pander)
+library(knitr)
 ```
 
-```{r echo=FALSE, Load_the_Data}
+```{r echo=TRUE, Load_the_Data}
 
 # Load the Data
 pd <- read.csv('./prosperLoanData.csv', sep=',')
@@ -27,6 +38,11 @@ head(pd, 10)
 str(pd) # Get the structure of data
 dim(pd) # Get the size
 names(pd) #Get all columns
+
+```
+
+# Univariate Plots Section
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 
 ggplot(aes(x = LoanOriginalAmount), data = pd) + 
   geom_histogram(binwidth = 1000, fill = '#5760AB') + 
@@ -39,16 +55,73 @@ summary(pd$StatedMonthlyIncome)
 summary(pd$StatedMonthlyIncome)
 
 ggplot(data=pd,aes(Term)) + 
-  geom_bar(color=I('black'),fill=I('#78D20b'))
+  geom_bar(color=I('blue'),fill=I('#78D20b'))
 
 ggplot(data=pd,aes(MonthlyLoanPayment))+
-  geom_histogram(binwidth=50,color=I('black'),fill=I('#56B4E9'))+
+  geom_histogram(binwidth=50,color=I('red'),fill=I('#56B4E9'))+
   scale_x_continuous(limits=c(0,2252),breaks=seq(0,2252,100))
-```
 
-# Univariate Plots Section
-```{r echo=FALSE, Univariate_Plots}
+#pandoc.table(pd$CreditGrade, style = "grid", caption = "Hello caption!")
+#pander(summary(pd$CreditGrade))
+#pander(summary(pd$MonthlyLoanPayment))
+summary(pd$Term)
+summary(pd$StatedMonthlyIncome)
+summary(pd$LoanOriginalAmount)
+table(pd$BorrowerState)
 
+ggplot(pd,aes(x=BorrowerState))+
+  geom_bar()+
+  scale_y_log10()+
+  theme(axis.text.x = element_text(face="bold",  
+                           size=8, angle=45),
+          axis.text.y = element_text(face="bold",  
+                           size=8))
+
+ggplot(pd,aes(x=BorrowerState))+
+  geom_bar()+
+  scale_y_log10()+
+  theme(axis.text.x = element_text(face="bold",  
+                           size=8, angle=45),
+          axis.text.y = element_text(face="bold",  
+                           size=8))
+
+ggplot(pd,aes(x=LoanStatus))+
+  geom_bar()+
+  scale_y_log10()+
+  theme(axis.text.x = element_text(face="bold",  
+                           size=10, angle=45),
+          axis.text.y = element_text(face="bold",  
+                           size=10))
+
+ggplot(data=pd,aes(x=DebtToIncomeRatio))+
+  geom_histogram(binwidth=0.1)+
+  scale_x_continuous(limits=c(0,1),breaks=seq(0,1,0.1))
+
+ggplot(data=pd,aes(x=IsBorrowerHomeowner))+
+  geom_bar()+
+  scale_y_continuous(limits=c(0,10000),breaks=seq(0,10000,500))
+summary(pd$IsBorrowerHomeowner)
+
+qplot(data = pd, x=InquiriesLast6Months, binwidth=3)
+qplot(data = pd, x=TotalCreditLinespast7years, binwidth=1)
+qplot(data = pd, x=OpenCreditLines, binwidth=1)
+qplot(data = pd, x=BorrowerAPR, binwidth = .01)
+
+#qplot(pd= loans, x = ProsperCreditGrade) +
+#  facet_wrap(~CreditSystem)
+
+#Mean Credit Score
+pd$MeanCreditScore <- (pd$CreditScoreRangeLower+pd$CreditScoreRangeUpper)/2
+qplot(data = pd, x=MeanCreditScore, binwidth = 10)
+
+
+summary(pd$CreditGrade)
+summary(pd$ProsperRating..Alpha.)
+summary(pd$PDCreditGrade)
+pd$PDCreditGrade <- 
+  as.factor(ifelse(pd$ProsperRating..Alpha. == "", 
+                   as.character(pd$CreditGrade), 
+                   as.character(pd$ProsperRating..Alpha.)))
 ```
 ####  Tip When plotting on a log scale, it is useful to note that 3 is about halfway between 1 and 10. As a side note, try not to plot counts on a log scale since counts of 0 are undefined and counts of 1 have a value of 0 (no height).
 ##### Tip: You can change the height and width of plots in code chunks with the fig.height and fig.width parameters in the chunk options.
@@ -82,7 +155,7 @@ When I use popular credit related apps such as CreditKarma and CreditWise I am s
 
 
 # Bivariate Plots Section
-```{r echo=FALSE, Bivariate_Plots}
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 
 ```
 
@@ -103,7 +176,7 @@ When I use popular credit related apps such as CreditKarma and CreditWise I am s
 
 #### Tip: Even when doing exploration, it can be good to select appropriate color palettes and set plot themes in order to make plots more readable. (The above plots use sequential color palettes from the RColorBrewer package; other variables might require qualitative or diverging palettes.)
 
-```{r echo=FALSE, Multivariate_Plots}
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivariate_Plots}
 
 ```
 
@@ -122,7 +195,7 @@ When I use popular credit related apps such as CreditKarma and CreditWise I am s
 # Final Plots and Summary
 #### Tip: Polish up the plots that you explored earlier in the report in the final plots section. Make sure you label and title the plots, and provide a description of what can be observed in each of the chosen plots.
 ### Plot One
-```{r echo=FALSE, Plot_One}
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_One}
 
 ```
 
@@ -130,7 +203,7 @@ When I use popular credit related apps such as CreditKarma and CreditWise I am s
 
 
 ### Plot Two
-```{r echo=FALSE, Plot_Two}
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_Two}
 
 ```
 
@@ -138,7 +211,7 @@ When I use popular credit related apps such as CreditKarma and CreditWise I am s
 
 
 ### Plot Three
-```{r echo=FALSE, Plot_Three}
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_Three}
 
 ```
 
