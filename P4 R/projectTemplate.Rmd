@@ -29,24 +29,57 @@ library(scales)
 library(pander)
 library(knitr)
 ```
-
+### Here is a summary of the dataset
 ```{r echo=TRUE, Load_the_Data}
 
 # Load the Data
 pd <- read.csv('./prosperLoanData.csv', sep=',')
-head(pd, 10)
+#head(pd, 10) --cumbersome
 str(pd) # Get the structure of data
 dim(pd) # Get the size
 names(pd) #Get all columns
 
 ```
-
 # Univariate Plots Section
+
+I start the Univariate analysis by developing graphs of select variables of my interest. 
+I have divided these variables into 4 broad categories along with the variables represented by them:
+ * Borrower - BorrowerRate, Occupation, EmploymentStatus, TotalInquiries, CurrentDeliquencies, RevolvingCreditBalance, OnTimeProsperPayments, DebtToIncomeRatio, IncomeRange
+ * Loan - Term, LoanStatus, ProsperPrincipalBorrowed, LoanOriginationDate, LoanMonthsSinceOrigination, MonthlyLoanPayment, PercentFunded, ListingCategory
+ * Credit - CreditScoreRangeLower, CreditScoreRangeUpper, FirstRecordedCreditLine, TotalCreditLinespast7years, ProsperRating, ProsperScore
+ * Lender - LenderYield, EstimatedReturn
+
+I will explore each variable to develop intuition about each.
+### Borrower
+#### BorrowerRate
+
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 
+ggplot(aes(x = BorrowerRate), data = pd) + 
+  geom_histogram(binwidth = 0.00500, fill = '#5760AB')
+summary(pd$BorrowerRate)
+```
+I used a bin size of 0.5 in the histogram above. I shows a considerable peak at
+0.35% rate with more than 5000 loans. The mean is around 0.2%
+
+#### Occupation
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+
+ggplot(data=pd,aes(Occupation))+
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+```
+The most popular Occupation entered is 'Other' and the next popular is 'Professional'
+
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 ggplot(aes(x = LoanOriginalAmount), data = pd) + 
   geom_histogram(binwidth = 1000, fill = '#5760AB') + 
   scale_x_continuous(breaks = seq(0, 113, 5))
+
+```
+
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 
 summary(pd$StatedMonthlyIncome)
   ggplot(data=pd,aes(StatedMonthlyIncome)) +       
