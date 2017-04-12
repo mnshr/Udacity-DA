@@ -68,10 +68,99 @@ I used a bin size of 0.5 in the histogram above. I shows a considerable peak at
 ggplot(data=pd,aes(Occupation))+
   geom_bar() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
+unique(pd$Occupation)
+mutate(pd, Occupation_new = ifelse(Occupation %in% c("Engineer - Mechanical",
+                                          "Scientist",
+                                          "Engineer - Electrical",
+                                          "Engineer - Chemical",
+                                          "Chemist",
+                                          "Biologist",
+                                          "Computer Programmer",
+                                          "Professor",
+                                          "Pilot - Private/Commercial"
+                                      ), "STEM Service",
+                                   ifelse(Occupation %in% 
+                                     c("Dentist",
+                                      "Doctor",
+                                      "Medical Technician",
+                                      "Nurse\'s Aide",
+                                      "Nurse (LPN)",
+                                      "Nurse (RN)",
+                                      "Pharmacist",
+                                      "Psychologist"
+                                      ), "Medical Service",
+                                   ifelse(Occupation %in% 
+                                     c("Professional",
+                                        "Sales - Commission",
+                                        "Clerical",
+                                        "Teacher",
+                                        "Accountant/CPA",
+                                        "Food Service Management",
+                                        "Administrative Assistant",
+                                        "Social Worker",
+                                        "Postal Service",
+                                        "Analyst",
+                                        "Sales - Retail",
+                                        "Military Enlisted",
+                                        "Flight Attendant",
+                                        "Retail Management",
+                                        "Military Officer",
+                                        "Food Service Management",
+                                        "Social Worker",
+                                        "Police Officer/Correction Officer",
+                                        "Teacher's Aide",
+                                        "Homemaker"
+                                      ), "General Service",
+                                   ifelse(Occupation %in% 
+                                     c("Executive",
+                                          "Principal",
+                                          "Judge",
+                                          "Car Dealer",
+                                          "Architect",
+                                          "Attorney",
+                                          "Investor",
+                                          "Clergy",
+                                          "Realtor",
+                                          "Civil Service",
+                                          "Religious"
+                                      ), "Distinguished Service",                                                                                 ifelse(Occupation %in% 
+                                     c("Tradesman - Mechanic",
+                                        "Tradesman - Electrician",
+                                        "Tradesman - Carpenter",
+                                        "Tradesman - Plumber",
+                                        "Contruction",
+                                        "Landscaping"
+                                      ), "Construction Service",
+                                   ifelse(Occupation %in% 
+                                     c("Laborer",
+                                        "Bus Driver",
+                                        "Fireman",
+                                        "Waiter/Waitress",
+                                        "Skilled Labor",
+                                        "Food Service",
+                                        "Other",
+                                        "Truck Driver"
+                                      ), "BCollar Service",
+                                   ifelse (Occupation %in% 
+                                     c("Student - College Freshman",
+                                      "Student - College Graduate Student",
+                                      "Student - College Junior",
+                                      "Student - College Senior",
+                                      "Student - College Sophomore",
+                                      "Student - Community College",
+                                      "Student - Technical School"
+                                      ), "Student", "Other"
+                                   ))))))))
 ```
-The most popular Occupation entered is 'Other' and the next popular is 'Professional'
+The most popular Occupation entered is 'Other' and the next popular is the 'Professional' category.
+We can group different occupation categories and revisit this chart. For example there are 
+multiple categories beginning with Student. There are about 70+ types of occupations listed in the dataset. I will try to reduce that to around 7
 
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+ggplot(data=pd,aes(Occupation_new))+
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 ggplot(aes(x = LoanOriginalAmount), data = pd) + 
   geom_histogram(binwidth = 1000, fill = '#5760AB') + 
