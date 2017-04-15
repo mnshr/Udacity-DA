@@ -69,7 +69,7 @@ ggplot(data=pd,aes(Occupation))+
   geom_bar() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 unique(pd$Occupation)
-mutate(pd, Occupation_new = ifelse(Occupation %in% c("Engineer - Mechanical",
+pd <- mutate(pd, Occupation_new = ifelse(Occupation %in% c("Engineer - Mechanical",
                                           "Scientist",
                                           "Engineer - Electrical",
                                           "Engineer - Chemical",
@@ -158,8 +158,67 @@ multiple categories beginning with Student. There are about 70+ types of occupat
 
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 ggplot(data=pd,aes(Occupation_new))+
-  geom_bar() +
+  geom_bar(fill = '#5760AB') +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+With the new Occupation categorization, we see the most of the loans come from "General Service" and "Blue Collar Services" jobs, although the number of people belonging to these must be high as well and hence a large number of loans.
+
+##### EmploymentStatus
+
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+summary(pd$EmploymentStatus)
+ggplot(aes(x = EmploymentStatus), data = pd) + 
+  geom_bar(fill = '#5760AB') + 
+  scale_x_continuous(breaks = seq(0, 113, 5))
+ggplot(aes(x = EmploymentStatusDuration), data = pd) + 
+  geom_histogram(binwidth=3, fill = '#5760AB')
+summary(pd$EmploymentStatusDuration)
+```
+A large number of borrowers are employed, the number being 67322+26355 or ~93000 including both Full-Time and Employed categories. The EmploymentStatusDuration graph shows a steady decline in the number of loans holders as the employment duration increases. Median is 67 month whereas max is 755 months. 
+
+##### TotalInquiries
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+summary(pd$TotalInquiries)
+ggplot(aes(x = TotalInquiries), data = pd) + 
+  scale_y_log10()+
+  geom_histogram(binwidth=2, fill = '#5760AB')
+```
+TotalInquiries have an impact on credit and the summary and the graph show that although the graph peaks in the range of 0 to 6 enquiries, there are few who have inquired for more than 100 times and the max is 379 which is unusually high. I converted the scale on Y axis to log.
+
+##### RevolvingCreditBalance
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+summary(pd$RevolvingCreditBalance)
+ggplot(aes(x = RevolvingCreditBalance), data = pd) + 
+  scale_y_log10()+
+  geom_histogram(binwidth=5000, fill = '#5760AB')
+```
+The log scaled histogram of RevolvingCreditBalance shows a large number of loans with low credit balance but there are many with greater than 50000 and even few with 0.5 million as credit balance.
+
+##### OnTimeProsperPayments
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+summary(pd$OnTimeProsperPayments)
+ggplot(aes(x = OnTimeProsperPayments), data = pd) + 
+  geom_histogram(binwidth=3, fill = '#5760AB')
+```
+This feature shows the number of on time payments the borrower had made on Prosper loans at the time they created this listing. This value will be null if the borrower has no prior loans and hence there are around 92000 entries with NULL. Although this would depend on Term of the loan, the count of on time loans seems to decline as the duration of ontime payment rises.
+
+##### DebtToIncomeRatio
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+summary(pd$DebtToIncomeRatio)
+ggplot(aes(x = DebtToIncomeRatio), data = pd) + 
+  geom_histogram(binwidth=0.1, fill = '#5760AB')
+```
+The DebtToIncomeRatio is an important feature in determining the credit score of a loan as it indicates the probability of default as the debt-to-income ratio increases. In this histogram, the ratio is 0.2 to 0.3 for more than 30000, the peak. It then declines, but there are few loans which have the ratio as 10, an unusually high number.
+
+##### IncomeRange
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
+summary(pd$IncomeRange)
+ggplot(data=pd,aes(IncomeRange))+
+  geom_bar(fill = '#5760AB') +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 ```
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univariate_Plots}
 ggplot(aes(x = LoanOriginalAmount), data = pd) + 
@@ -167,7 +226,6 @@ ggplot(aes(x = LoanOriginalAmount), data = pd) +
   scale_x_continuous(breaks = seq(0, 113, 5))
 
 ```
-
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 
 summary(pd$StatedMonthlyIncome)
@@ -269,8 +327,8 @@ When I use popular credit related apps such as CreditKarma and CreditWise I am s
 ### Did you create any new variables from existing variables in the dataset?
 
 * CreditScoreRange by combining the Lower and Upper and taking an average
-* Since there are a large number of ListingCategory types, I logically grouped them into 5 and created ListingCategories5.
-* Occupation grouped together to create smaller number of categories - Occupation5
+* Since there are a large number of ListingCategory types, I logically grouped them into 5 and created ListingCategories5. ??
+* Occupation grouped together to create smaller number of categories - Occupation_new
 * Combined ProsperRating and ProsperScore
 
 ### Of the features you investigated, were there any unusual distributions? Did you perform any operations on the data to tidy, adjust, or change the form of the data? If so, why did you do this?
