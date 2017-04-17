@@ -19,6 +19,7 @@ reflect on my findings in the concluding section.
 # You should set echo=FALSE for all code chunks in your file.
 
 library(ggplot2)
+library(GGally)
 library(gridExtra)
 library(dplyr)
 library(RColorBrewer)
@@ -390,20 +391,120 @@ Yes, following are the variables I derived from the dataset:
 # Bivariate Plots Section
 ```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
 #MeanCreditScore, ProsperCreditRating
+
+ggcorr(dplyr::select(pd, 35, 9:18, 33, 30), 
+       low = "steelblue", mid = "white", high = "darkred", label = TRUE, 
+       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
+  ggtitle("Correlation Matrix with ScoreX Loans")
+
 ggplot(data=pd,aes(x=ProsperCreditRating,y=BorrowerRate))+
   geom_boxplot(aes(colour=ProsperCreditRating))
 
-ggplot(data=pd,aes(x=MeanCreditScore,y=BorrowerRate))+
-  geom_boxplot(aes(colour=MeanCreditScore))
+as.numeric(cor.test(pd$BorrowerRate, 
+                           pd$Term)$estimate)
+cor.test(pd$BorrowerRate, 
+                           pd$Term)
+ggplot(data=pd,aes(x=ProsperCreditRating,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(400,850))
+
+ggplot(data = pd, aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
+#  coord_cartesian(xlim = c(quantile(pd$LoanOriginalAmount, 0.025), 
+#                           quantile(pd$LoanOriginalAmount, 0.975)),
+#                  ylim = c(quantile(pd$BorrowerRate, 0.025),
+#                           quantile(pd$BorrowerRate, 0.975))) +
+  geom_smooth(aes(color=ProsperCreditRating)) +
+  scale_x_sqrt()
+
+ggplot(data=pd,aes(x=Occupation_new,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=Occupation_new)) +
+  coord_cartesian(ylim = c(400,850))
+
+ggplot(data=pd,aes(x=EmploymentStatus,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=EmploymentStatus)) +
+  coord_cartesian(ylim = c(400,850))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=TotalInquiries))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,150))
+
+#??
+ggplot(data=pd,aes(x=ProsperCreditRating,y=CurrentDelinquencies))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,50))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=OnTimeProsperPayments))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,50))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=DebtToIncomeRatio))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,1))
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~IncomeRange)
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~MeanCreditScore)
+
+ggplot(data = pd, aes(x = as.factor(Term), y = MeanCreditScore)) +
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
+                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~Term)
+
+ggplot(data=pd,aes(x=Term))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperCreditRating,3)
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=LoanOriginalAmount))+
+  geom_boxplot(aes(colour=ProsperCreditRating))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=MonthlyLoanPayment))+
+  geom_boxplot(aes(colour=ProsperCreditRating))
+
+ggplot(data=pd,aes(x=MeanCreditScore))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~LoanStatus,3)
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~LoanStatus)
+
+ggplot(data = pd, aes(x = pd$ProsperCreditRating, y = pd$Investors)) +
+  geom_boxplot(aes(colour=ProsperCreditRating)) + coord_cartesian(ylim = c(0,280))
 
 ggplot(data=pd,aes(x=MeanCreditScore))+
   geom_histogram(binwidth=10, position = "identity")+
   #scale_y_log10()+
   facet_wrap(~ProsperCreditRating,3)
 
-ggplot(data = pd, aes(x = pd$ProsperCreditRating, y = pd$Investors)) +
-  geom_boxplot() + coord_cartesian(ylim = c(0,280))
+ggplot(data=pd,aes(x=ProsperScore))+
+  geom_histogram(binwidth=2, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperCreditRating,3)
 
+ggplot(data=pd,aes(x=MeanCreditScore))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperScore,3)
+ggplot(data=pd,aes(x=ProsperScore))+
+  geom_histogram(binwidth=1, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~MeanCreditScore,3)
+
+table(pd$BankcardUtilization)
+ggplot(data=pd,aes(x=ProsperCreditRating,y=BankcardUtilization))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+coord_cartesian(ylim = c(0,3))
+
+qplot(data= pd, x = BorrowerRate) +
+  facet_wrap(~ProsperCreditRating)
+qplot(data= pd, x = BorrowerRate) +
+  facet_wrap(~MeanCreditScore)
 
 ```
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
@@ -412,8 +513,6 @@ ggplot(data = pd, aes(x = pd$ProsperCreditRating, y = pd$Investors)) +
 qplot(data= pd, x = ProsperCreditRating) +
   facet_wrap(~CreditRange)
 
-qplot(data= pd, x = BorrowerRate) +
-  facet_wrap(~ProsperCreditRating)
 
 ggplot(data = subset(pd, ListingCategory..numeric. == 1 & 
                              ListingCategory..numeric. != 0), 
