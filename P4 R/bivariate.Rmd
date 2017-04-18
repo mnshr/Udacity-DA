@@ -1,0 +1,203 @@
+---
+title: "bivariate"
+author: "mnshr"
+date: "April 17, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', packages}
+# Load all of the packages that you end up using
+# in your analysis in this code chunk.
+
+# Notice that the parameter "echo" was set to FALSE for this code chunk.
+# This prevents the code from displaying in the knitted HTML output.
+# You should set echo=FALSE for all code chunks in your file.
+
+library(ggplot2)
+library(GGally)
+library(gridExtra)
+library(dplyr)
+library(RColorBrewer)
+#library(ellipse)
+library(reshape)
+library(memisc)
+library(scales)
+library(pander)
+library(knitr)
+```
+# Bivariate Plots Section
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+#MeanCreditScore, ProsperCreditRating
+
+# Correlation matrix among numerical variables
+ggcorr(dplyr::select(pd, 9, 26, 27, 30:35, 37, 41, 42, 47, 50, 52, 54, 57, 62, 64, 81, 86), #9:18
+       low = "darkgreen", mid = "white", high = "darkblue", label = TRUE, 
+       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
+  ggtitle("Correlation Matrix")
+```
+Variables Term, EmploymentStatusDuration, ProsperScore, LoanCurrentDaysDelinquent, DelinquenciesLast7Years, ProsperPrincipalOutstanding
+are not showing correlation with others and I remove them in the following matrix to reduce the density in the correlation matrix.
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggcorr(dplyr::select(pd, 5, 9, 16, 21, 26, 27, 30:38, 41, 42, 47, 50, 52, 54, 57, 58, 60, 62, 64, 81, 86), #9:18
+       low = "darkgreen", mid = "white", high = "darkblue", label = TRUE, 
+       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
+  ggtitle("Correlation Matrix")
+
+```
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+```
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggplot(aes(x = MeanCreditScore, y = LoanOriginalAmount),
+       data = subset(pd, !is.na(ProsperCreditRating))) +
+  scale_y_sqrt()+
+  geom_line(aes(color=ProsperCreditRating), stat='summary', fun.y=median)
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=BorrowerRate))+
+  geom_boxplot(aes(colour=ProsperCreditRating))
+
+as.numeric(cor.test(pd$BorrowerRate, 
+                           pd$Term)$estimate)
+cor.test(pd$BorrowerRate, 
+                           pd$Term)
+ggplot(data=pd,aes(x=ProsperCreditRating,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(400,850))
+
+ggplot(data = pd, aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
+#  coord_cartesian(xlim = c(quantile(pd$LoanOriginalAmount, 0.025), 
+#                           quantile(pd$LoanOriginalAmount, 0.975)),
+#                  ylim = c(quantile(pd$BorrowerRate, 0.025),
+#                           quantile(pd$BorrowerRate, 0.975))) +
+  geom_smooth(aes(color=ProsperCreditRating)) +
+  scale_x_sqrt()
+
+ggplot(data = pd, aes(x = BorrowerRate, y = MeanCreditScore)) +
+  geom_smooth()
+
+ggplot(data = pd, aes(x = BorrowerRate, y = LoanOriginalAmount)) +
+  geom_smooth(aes(color=Occupation_new))
+S
+ggplot(data = pd, aes(x = DebtToIncomeRatio, y = LoanOriginalAmount)) +
+  geom_smooth()
+
+ggplot(data=pd,aes(x=Occupation_new,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=Occupation_new)) +
+  coord_cartesian(ylim = c(400,850))
+
+ggplot(data=pd,aes(x=EmploymentStatus,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=EmploymentStatus)) +
+  coord_cartesian(ylim = c(400,850))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=TotalInquiries))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,150))
+
+#??
+ggplot(data=pd,aes(x=ProsperCreditRating,y=CurrentDelinquencies))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,50))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=OnTimeProsperPayments))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,50))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=DebtToIncomeRatio))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(0,1))
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~IncomeRange)
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~MeanCreditScore)
+
+ggplot(data = pd, aes(x = as.factor(Term), y = MeanCreditScore)) +
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
+                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~Term)
+
+ggplot(data=pd,aes(x=Term))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperCreditRating,3)
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=LoanOriginalAmount))+
+  geom_boxplot(aes(colour=ProsperCreditRating))
+
+ggplot(data=pd,aes(x=ProsperCreditRating,y=MonthlyLoanPayment))+
+  geom_boxplot(aes(colour=ProsperCreditRating))
+
+ggplot(data=pd,aes(x=MeanCreditScore))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~LoanStatus,3)
+
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~LoanStatus)
+
+ggplot(data = pd, aes(x = pd$ProsperCreditRating, y = pd$Investors)) +
+  geom_boxplot(aes(colour=ProsperCreditRating)) + coord_cartesian(ylim = c(0,280))
+
+ggplot(data=pd,aes(x=MeanCreditScore))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperCreditRating,3)
+
+ggplot(data=pd,aes(x=ProsperScore))+
+  geom_histogram(binwidth=2, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperCreditRating,3)
+
+ggplot(data=pd,aes(x=MeanCreditScore))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperScore,3)
+ggplot(data=pd,aes(x=ProsperScore))+
+  geom_histogram(binwidth=1, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~MeanCreditScore,3)
+
+table(pd$BankcardUtilization)
+ggplot(data=pd,aes(x=ProsperCreditRating,y=BankcardUtilization))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+coord_cartesian(ylim = c(0,3))
+
+qplot(data= pd, x = BorrowerRate) +
+  facet_wrap(~ProsperCreditRating)
+qplot(data= pd, x = BorrowerRate) +
+  facet_wrap(~MeanCreditScore)
+
+```
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+```
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+qplot(data= pd, x = ProsperCreditRating) +
+  facet_wrap(~CreditRange)
+
+
+ggplot(data = subset(pd, ListingCategory..numeric. == 1 & 
+                             ListingCategory..numeric. != 0), 
+             aes(x=DebtToIncomeRatio)) +
+  geom_histogram(binwidth = 0.01) + 
+  scale_x_continuous(limits = c(0,1)) + 
+  labs(title = "Consolidation Loan") + 
+  scale_y_sqrt() + 
+  geom_vline(aes(xintercept=mean(subset(pd, ListingCategory..numeric. == 1 
+                                        & ListingCategory..numeric. 
+                                        != 0)$DebtToIncomeRatio, na.rm = T)), 
+             color = "blue", size=2)
+```
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the investigation. How did the feature(s) of interest vary with other features in the dataset?
+
+### Did you observe any interesting relationships between the other features (not the main feature(s) of interest)?
+
+### What was the strongest relationship you found?
+
