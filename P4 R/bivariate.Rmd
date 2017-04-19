@@ -29,6 +29,18 @@ library(pander)
 library(knitr)
 ```
 # Bivariate Plots Section
+
+I will be exploring the relationship among pairs of variables in this section. Beginning with a correlation matrix chart to get an idea in general about the relationship among variables I got me interested in the Univariate analysis section.
+
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggcorr(dplyr::select(pd, 5, 9, 16, 21, 26, 27, 30:38, 41, 42, 47, 50, 52, 54, 57, 58, 60, 62, 64, 81, 86), #9:18
+       low = "darkgreen", mid = "white", high = "darkblue", label = TRUE, 
+       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
+  ggtitle("Correlation Matrix")
+
+```
+The generated graph is extremely busy but I am able to identify some of the variables which don't show much correlation with others. Variables such as Term, EmploymentStatusDuration, ProsperScore, LoanCurrentDaysDelinquent, DelinquenciesLast7Years, ProsperPrincipalOutstanding are not showing correlation with others and hence I removed them in the following correlation matrix to reduce the density of information in the matrix.
+
 ```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
 #MeanCreditScore, ProsperCreditRating
 
@@ -38,48 +50,80 @@ ggcorr(dplyr::select(pd, 9, 26, 27, 30:35, 37, 41, 42, 47, 50, 52, 54, 57, 62, 6
        angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
   ggtitle("Correlation Matrix")
 ```
-Variables Term, EmploymentStatusDuration, ProsperScore, LoanCurrentDaysDelinquent, DelinquenciesLast7Years, ProsperPrincipalOutstanding
-are not showing correlation with others and I remove them in the following matrix to reduce the density in the correlation matrix.
-```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
-ggcorr(dplyr::select(pd, 5, 9, 16, 21, 26, 27, 30:38, 41, 42, 47, 50, 52, 54, 57, 58, 60, 62, 64, 81, 86), #9:18
-       low = "darkgreen", mid = "white", high = "darkblue", label = TRUE, 
-       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
-  ggtitle("Correlation Matrix")
+There are some interesting observations in the graph above. First of all we can ignore the correlation of 1 among MeanCreditScore and the 2 CreditScoreRange [Upper/Lower] variables, since the mean is derived from the 2. The 4 variables, OpenRevolvingMonthlyPayment, OpenRevolvingAccounts, OpenCreditLines and TotalCreditLinesPast7Years are all strongly related to each other ranging from 0.5 to 0.82
+Next highest correlation is between RevolvingCreditBalance and OpenRevolvingMonthlyPayment at 0.76, indicating that the payment tends to be usually equal to the Balance amount although it may not be always the case. The correlation between TotalInquiries and InquiriesLast6Months is also strong at 0.74, which is an obviously strong relationship. TotalProsperLoans and OnTimeProsperPayments correlation is at 0.7 which indicates that the On time payment record is a strong factor in getting the borrowers more loans.
+On the negative correlation front, variables BorrowerRate, MeanCreditScore show a correlation of -0.46 while MeanCreditScore and BankCardUtilization show a correlation score of -0.41.
 
-```
+In my analysis further I will also include the categorical variables along with continuous ones.
+
+MeanCreditScore vs LoanOriginalAmount
 ```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
-```
-```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
-ggplot(aes(x = MeanCreditScore, y = LoanOriginalAmount),
+cor.test(pd$MeanCreditScore, pd$LoanOriginalAmount)
+ggplot(aes(x = LoanOriginalAmount, y = MeanCreditScore),
        data = subset(pd, !is.na(ProsperCreditRating))) +
-  scale_y_sqrt()+
-  geom_line(aes(color=ProsperCreditRating), stat='summary', fun.y=median)
+  scale_x_sqrt()+
+  geom_line(stat='summary', fun.y=median, fun.x=median) +
+  coord_cartesian(ylim = c(400,850)) + 
+  geom_smooth()
+```
+We can observe a general increasing trend of MeanCreditScore as the LoanOriginalAmount increases. The loan amount is square root transformed. Although the graph shows lot of variation in Credit Score for most of the loan amounts, except the very high ones. At high loan amounts the Credit Scores are found to be among the highest.
 
-ggplot(data=pd,aes(x=ProsperCreditRating,y=BorrowerRate))+
-  geom_boxplot(aes(colour=ProsperCreditRating))
+MeanCreditScore vs BorrowerRate
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+cor.test(pd$MeanCreditScore, pd$BorrowerRate)
 
-as.numeric(cor.test(pd$BorrowerRate, 
-                           pd$Term)$estimate)
-cor.test(pd$BorrowerRate, 
-                           pd$Term)
-ggplot(data=pd,aes(x=ProsperCreditRating,y=MeanCreditScore))+
-  geom_boxplot(aes(colour=ProsperCreditRating)) +
-  coord_cartesian(ylim = c(400,850))
-
-ggplot(data = pd, aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
-#  coord_cartesian(xlim = c(quantile(pd$LoanOriginalAmount, 0.025), 
-#                           quantile(pd$LoanOriginalAmount, 0.975)),
-#                  ylim = c(quantile(pd$BorrowerRate, 0.025),
-#                           quantile(pd$BorrowerRate, 0.975))) +
-  geom_smooth(aes(color=ProsperCreditRating)) +
-  scale_x_sqrt()
-
-ggplot(data = pd, aes(x = BorrowerRate, y = MeanCreditScore)) +
+ggplot(aes(x = BorrowerRate, y = MeanCreditScore),
+       data = subset(pd, !is.na(ProsperCreditRating))) +
+  scale_x_sqrt()+
+  geom_line(stat='summary', fun.y=median, fun.x=median) +
+  coord_cartesian(ylim = c(400,850)) + 
   geom_smooth()
 
+ggplot(data = subset(pd, !is.na(ProsperCreditRating)), 
+       aes(x = BorrowerRate, y = MeanCreditScore)) +
+      geom_smooth()
+```
+The correlation shows a negative relation of -0.46 as we had seen in the correlation matrix.
+The chart shows a negative relation, except when the interest rate is less than around 0.6% where it shows a sharp increase in the trend. Hence it can be deduced that a very small interest rate is good for the credit score to a threshold after which the credit score declines.
+
+Investigating MeanCreditScore vs DebtToIncomeRatio
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+cor.test(pd$MeanCreditScore, pd$DebtToIncomeRatio)
+
+ggplot(aes(x = DebtToIncomeRatio, y = MeanCreditScore),
+       data = subset(pd, !is.na(ProsperCreditRating))) +
+  scale_x_sqrt()+
+  geom_line(stat='summary', fun.y=median, fun.x=median) +
+  coord_cartesian(ylim = c(400,850)) + 
+  geom_smooth()
+
+ggplot(data = subset(pd, !is.na(ProsperCreditRating)), 
+       aes(x = DebtToIncomeRatio, y = MeanCreditScore)) +
+      geom_smooth()
+```
+I see a very small negative correlation and no strong relationship between DebtToIncomeRatio and MeanCreditScore. The second curve also shows a very non-obvious relationship. I was expecting the credit score to fall with a rising debt to income ratio, but since there are many other factors considered to calculate the credit score, from the data we have, the DebtToIncome ratio doesn't seem to be playing a role.
+
+Changing the gears a bit, I compare the newly created Occupation_new categorical variable with the StatedMonthlyIncome to understand whether my intuition regarding categorization on multiple occupation categories in the dataset was correct or not.
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggplot(data=pd,aes(x=Occupation_new,y=StatedMonthlyIncome))+
+  geom_boxplot(aes(colour=Occupation_new)) +
+  scale_y_log10() +
+  coord_cartesian(ylim = c(1000,20000))
+```
+It can be observed from the box plot, that monthly income is highest for the Distinguished Service, followed by STEM related services, Medical services respectively. As expected Students are the lowest earners. 
+I will now try to pair the Occupation_new with MeanCreditScore to get a roughly similar relationship.
+
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggplot(data=pd,aes(x=Occupation_new,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=Occupation_new)) +
+  coord_cartesian(ylim = c(600,800))
+```
+Filtering out the outliers, the box plots fpr MeanCreditScore show a similar relationship as was with the StatedMonthlyIncome. Although since the range for credit score is much lower than the income the differences aren't very clear looking at the 1st and 3rd quantiles of the box plots.
+
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
 ggplot(data = pd, aes(x = BorrowerRate, y = LoanOriginalAmount)) +
   geom_smooth(aes(color=Occupation_new))
-S
+
 ggplot(data = pd, aes(x = DebtToIncomeRatio, y = LoanOriginalAmount)) +
   geom_smooth()
 
