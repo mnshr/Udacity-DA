@@ -82,11 +82,16 @@ ggplot(aes(x = BorrowerRate, y = MeanCreditScore),
 ggplot(data = subset(pd, !is.na(ProsperCreditRating)), 
        aes(x = BorrowerRate, y = MeanCreditScore)) +
       geom_smooth()
+
+qplot(data= pd, x = BorrowerRate) +
+  facet_wrap(~MeanCreditScore)
 ```
 The correlation shows a negative relation of -0.46 as we had seen in the correlation matrix.
 The chart shows a negative relation, except when the interest rate is less than around 0.6% where it shows a sharp increase in the trend. Hence it can be deduced that a very small interest rate is good for the credit score to a threshold after which the credit score declines.
 
-Investigating MeanCreditScore vs DebtToIncomeRatio
+The facet wrap graph histogram shows an approximate normal distribution for loan counts in 650 to 750 range and for higher credit scores the distribution is right skewed due to lower rate charged for them.
+
+MeanCreditScore vs DebtToIncomeRatio
 ```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
 cor.test(pd$MeanCreditScore, pd$DebtToIncomeRatio)
 
@@ -120,20 +125,82 @@ ggplot(data=pd,aes(x=Occupation_new,y=MeanCreditScore))+
 ```
 Filtering out the outliers, the box plots fpr MeanCreditScore show a similar relationship as was with the StatedMonthlyIncome. Although since the range for credit score is much lower than the income the differences aren't very clear looking at the 1st and 3rd quantiles of the box plots.
 
+MeanCreditScore vs ProsperCreditRating
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggplot(data=subset(pd, !is.na(ProsperCreditRating)),aes(x=ProsperCreditRating,y=MeanCreditScore))+
+  geom_boxplot(aes(colour=ProsperCreditRating)) +
+  coord_cartesian(ylim = c(600,800)) +
+    scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
+                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
+
+
+qplot(data= subset(pd, !is.na(MeanCreditScore)), x = ProsperCreditRating) +
+  facet_wrap(~MeanCreditScore)
+
+ggplot(data=pd,aes(x=MeanCreditScore))+
+  geom_histogram(binwidth=10, position = "identity")+
+  #scale_y_log10()+
+  facet_wrap(~ProsperCreditRating,3)
+```
+I charted two different types of graphs, a box plot and a facet wrap. In the box plot it can be seen that  median credit score is highest for AA and then it goes down for A, B upto E. The median for HR is higher than E's median due to outliers with very high MeanCreditScore.
+
+The facet chart shows an approximate normal distribution for ProsperCreditRating categories for  MeanCreditScore present in the range 650 to 750. At higher credit score we can see the distribution tending to be right skewed due to dwindling number with poor Prosper ratings at higher MeanCreditScore.
+
+MonthlyLoanPayment vs MeanCreditScore
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+cor.test(pd$MeanCreditScore, pd$MonthlyLoanPayment)
+
+ggplot(aes(x = MonthlyLoanPayment, y = MeanCreditScore),
+       data = subset(pd, !is.na(ProsperCreditRating))) +
+  scale_x_sqrt()+
+  geom_line(stat='summary', fun.y=median) +
+  coord_cartesian(ylim = c(400,850)) + 
+  geom_smooth()
+
+ggplot(data = subset(pd, !is.na(ProsperCreditRating)), 
+       aes(x = MonthlyLoanPayment, y = MeanCreditScore)) +
+      geom_smooth()
+
+```
+The correlation shows a value of around 0.3 which is also reflected in the 2 charts that follow.
+
+MeanCreditScore vs Term
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+cor.test(pd$MeanCreditScore, pd$Term)
+ggplot(data = pd, aes(x = as.factor(Term), y = MeanCreditScore)) +
+  geom_boxplot() + 
+  scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
+                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
+```
+The correlation is very low at 0.12. The box plot shows that for loans of shorter term as well as longer term the MeanCreditScore is higher, with a greater inter-quartile range for 12 month term. The loan term of 36 months is much larger in number of loans and correlate with a larger range of credit score even though the interquartile range is smaller.
+
+MeanCreditScore vs LoanStatus
+```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
+ggplot(data = pd, aes(x = as.factor(LoanStatus), y = MeanCreditScore)) +
+  geom_boxplot(aes(colour=LoanStatus)) + 
+  scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
+                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
+
+```
+The categorical variable LoanStatus shows an obvious relationship with MeanCreditScore. The credit score is high for Current and Completed loans. But for Charged-off and Defaulted loans are clearly lower. The Past Due categories are flat across the 6 past due categories. An interesting thing to note is that for FinalPaymentInProgress and Completed loans the credit scores are lower than Current loans.
+
+MeanCreditScore vs BankcardUtilization
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+summary(pd$BankcardUtilization)
+cor.test(pd$MeanCreditScore, pd$BankcardUtilization)
+
+```
+
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+```
+##############
+
 ```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
 ggplot(data = pd, aes(x = BorrowerRate, y = LoanOriginalAmount)) +
   geom_smooth(aes(color=Occupation_new))
 
 ggplot(data = pd, aes(x = DebtToIncomeRatio, y = LoanOriginalAmount)) +
   geom_smooth()
-
-ggplot(data=pd,aes(x=Occupation_new,y=MeanCreditScore))+
-  geom_boxplot(aes(colour=Occupation_new)) +
-  coord_cartesian(ylim = c(400,850))
-
-ggplot(data=pd,aes(x=EmploymentStatus,y=MeanCreditScore))+
-  geom_boxplot(aes(colour=EmploymentStatus)) +
-  coord_cartesian(ylim = c(400,850))
 
 ggplot(data=pd,aes(x=ProsperCreditRating,y=TotalInquiries))+
   geom_boxplot(aes(colour=ProsperCreditRating)) +
@@ -156,14 +223,6 @@ qplot(data= pd, x = ProsperCreditRating) +
   facet_wrap(~IncomeRange)
 
 qplot(data= pd, x = ProsperCreditRating) +
-  facet_wrap(~MeanCreditScore)
-
-ggplot(data = pd, aes(x = as.factor(Term), y = MeanCreditScore)) +
-  geom_boxplot() + 
-  scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
-                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
-
-qplot(data= pd, x = ProsperCreditRating) +
   facet_wrap(~Term)
 
 ggplot(data=pd,aes(x=Term))+
@@ -177,35 +236,16 @@ ggplot(data=pd,aes(x=ProsperCreditRating,y=LoanOriginalAmount))+
 ggplot(data=pd,aes(x=ProsperCreditRating,y=MonthlyLoanPayment))+
   geom_boxplot(aes(colour=ProsperCreditRating))
 
-ggplot(data=pd,aes(x=MeanCreditScore))+
-  geom_histogram(binwidth=10, position = "identity")+
-  #scale_y_log10()+
-  facet_wrap(~LoanStatus,3)
-
 qplot(data= pd, x = ProsperCreditRating) +
   facet_wrap(~LoanStatus)
 
 ggplot(data = pd, aes(x = pd$ProsperCreditRating, y = pd$Investors)) +
   geom_boxplot(aes(colour=ProsperCreditRating)) + coord_cartesian(ylim = c(0,280))
 
-ggplot(data=pd,aes(x=MeanCreditScore))+
-  geom_histogram(binwidth=10, position = "identity")+
-  #scale_y_log10()+
-  facet_wrap(~ProsperCreditRating,3)
-
 ggplot(data=pd,aes(x=ProsperScore))+
   geom_histogram(binwidth=2, position = "identity")+
   #scale_y_log10()+
   facet_wrap(~ProsperCreditRating,3)
-
-ggplot(data=pd,aes(x=MeanCreditScore))+
-  geom_histogram(binwidth=10, position = "identity")+
-  #scale_y_log10()+
-  facet_wrap(~ProsperScore,3)
-ggplot(data=pd,aes(x=ProsperScore))+
-  geom_histogram(binwidth=1, position = "identity")+
-  #scale_y_log10()+
-  facet_wrap(~MeanCreditScore,3)
 
 table(pd$BankcardUtilization)
 ggplot(data=pd,aes(x=ProsperCreditRating,y=BankcardUtilization))+
@@ -214,11 +254,7 @@ coord_cartesian(ylim = c(0,3))
 
 qplot(data= pd, x = BorrowerRate) +
   facet_wrap(~ProsperCreditRating)
-qplot(data= pd, x = BorrowerRate) +
-  facet_wrap(~MeanCreditScore)
 
-```
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 ```
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 qplot(data= pd, x = ProsperCreditRating) +
