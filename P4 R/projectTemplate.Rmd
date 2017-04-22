@@ -10,13 +10,13 @@ I will perform three types of analyses, Univariate, Bivariate and Multivariate
 using preselected variables among the 81 that are part of the dataset and
 reflect on my findings in the concluding section. 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', packages}
+```{r echo=TRUE, warning=FALSE, message=FALSE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', packages}
 # Load all of the packages that you end up using
 # in your analysis in this code chunk.
 
 # Notice that the parameter "echo" was set to FALSE for this code chunk.
 # This prevents the code from displaying in the knitted HTML output.
-# You should set echo=FALSE for all code chunks in your file.
+# You should set echo=TRUE, warning=FALSE for all code chunks in your file.
 
 library(ggplot2)
 library(GGally)
@@ -31,7 +31,7 @@ library(pander)
 library(knitr)
 ```
 ### Here is a summary of the dataset
-```{r echo=TRUE, Load_the_Data}
+```{r echo=TRUE, warning=FALSE, warning=FALSE, Load_the_Data}
 
 # Load the Data
 pd <- read.csv('./prosperLoanData.csv', sep=',')
@@ -48,7 +48,7 @@ I have divided these variables into 4 broad categories along with the variables 
  * Borrower - BorrowerRate, Occupation, EmploymentStatus, TotalInquiries, CurrentDeliquencies, RevolvingCreditBalance, OnTimeProsperPayments, DebtToIncomeRatio, IncomeRange
  * Loan - Term, LoanStatus, ProsperPrincipalBorrowed, LoanOriginationDate, LoanMonthsSinceOrigination, MonthlyLoanPayment, PercentFunded, ListingCategory
  * Credit - CreditScoreRangeLower, CreditScoreRangeUpper, FirstRecordedCreditLine, TotalCreditLinespast7years, ProsperRating, ProsperScore
- * Lender - LenderYield, EstimatedReturn
+ * Lender - LenderYield, EstimatedReturn, EstimatedLoss
 
 I will explore each variable to develop intuition about each.
 
@@ -56,7 +56,7 @@ I will explore each variable to develop intuition about each.
 
 #### BorrowerRate
 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_BR}
+```{r echo=TRUE, warning=FALSE, warning=FALSE, cache=TRUE, cache.path='cache/', fig.path='figure/', Univar_BR}
 
 ggplot(aes(x = BorrowerRate), data = pd) + 
   geom_histogram(binwidth = 0.00500, fill = '#5760AB')
@@ -67,13 +67,14 @@ I used a bin size of 0.5 in the histogram above. I shows a considerable peak at
 0.35% rate with more than 5000 loans. The mean is around 0.2%
 
 #### Occupation
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Occup}
+```{r echo=TRUE, warning=FALSE, warning=FALSE, cache=TRUE, cache.path='cache/', fig.path='figure/', Univar_Occup}
 
 ggplot(data=pd,aes(Occupation))+
   geom_bar() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 unique(pd$Occupation)
-pd <- mutate(pd, Occupation_new = ifelse(Occupation %in% c("Engineer - Mechanical",
+pd <- mutate(pd, Occupation_new = ifelse(Occupation %in% 
+                                           c("Engineer - Mechanical",
                                           "Scientist",
                                           "Engineer - Electrical",
                                           "Engineer - Chemical",
@@ -161,7 +162,7 @@ The most popular Occupation entered is 'Other' and the next popular is the 'Prof
 We can group different occupation categories and revisit this chart. For example there are 
 multiple categories beginning with Student. There are about 70+ types of occupations listed in the dataset. I will try to reduce that to around 7
 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_ON}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_ON}
 ggplot(data=subset(pd, !is.na(Occupation_new)),aes(Occupation_new))+
   geom_bar(fill = '#78D20b') +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -171,12 +172,13 @@ With the new Occupation categorization, we see the most of the loans come from "
 
 #### EmploymentStatus
 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Emp}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Emp}
 summary(pd$EmploymentStatus)
-ggplot(aes(x = EmploymentStatus), data = subset(pd, !is.na(EmploymentStatus))) + 
-  geom_bar(fill = '#5760AB') 
+ggplot(aes(x = EmploymentStatus), data = subset(pd, !is.na(EmploymentStatus)))
+  + geom_bar(fill = '#5760AB') 
 
-ggplot(aes(x = EmploymentStatusDuration), data = subset(pd, !is.na(EmploymentStatusDuration))) + 
+ggplot(aes(x = EmploymentStatusDuration), 
+       data = subset(pd, !is.na(EmploymentStatusDuration))) + 
   geom_histogram(binwidth=3, fill = '#5760AB')
 summary(pd$EmploymentStatusDuration)
 ```
@@ -184,7 +186,7 @@ summary(pd$EmploymentStatusDuration)
 A large number of borrowers are employed, the number being 67322+26355 or ~93000 including both Full-Time and Employed categories. The EmploymentStatusDuration graph shows a steady decline in the number of loans holders as the employment duration increases. Median is 67 month whereas max is 755 months. 
 
 #### TotalInquiries
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Inq}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Inq}
 summary(pd$TotalInquiries)
 ggplot(aes(x = TotalInquiries), data = subset(pd, !is.na(TotalInquiries))) + 
   scale_y_log10()+
@@ -194,9 +196,10 @@ ggplot(aes(x = TotalInquiries), data = subset(pd, !is.na(TotalInquiries))) +
 TotalInquiries have an impact on credit and the summary and the graph show that although the graph peaks in the range of 0 to 6 enquiries, there are few who have inquired for more than 100 times and the max is 379 which is unusually high. I converted the scale on Y axis to log.
 
 #### RevolvingCreditBalance
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_RCB}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_RCB}
 summary(pd$RevolvingCreditBalance)
-ggplot(aes(x = RevolvingCreditBalance), data = subset(pd, !is.na(RevolvingCreditBalance))) + 
+ggplot(aes(x = RevolvingCreditBalance), 
+  data = subset(pd, !is.na(RevolvingCreditBalance))) + 
   scale_y_log10()+
   geom_histogram(binwidth=5000, fill = '#5760AB')
 ```
@@ -204,18 +207,20 @@ ggplot(aes(x = RevolvingCreditBalance), data = subset(pd, !is.na(RevolvingCredit
 The log scaled histogram of RevolvingCreditBalance shows a large number of loans with low credit balance but there are many with greater than 50000 and even few with 0.5 million as credit balance.
 
 #### OnTimeProsperPayments
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Payments}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Payments}
 summary(pd$OnTimeProsperPayments)
-ggplot(aes(x = OnTimeProsperPayments), data = subset(pd, !is.na(OnTimeProsperPayments))) + 
+ggplot(aes(x = OnTimeProsperPayments), 
+  data = subset(pd, !is.na(OnTimeProsperPayments))) + 
   geom_histogram(binwidth=3, fill = '#78D20b')
 ```
 
 This feature shows the number of on time payments the borrower had made on Prosper loans at the time they created this listing. This value will be null if the borrower has no prior loans and hence there are around 92000 entries with NULL. Although this would depend on Term of the loan, the count of on time loans seems to decline as the duration of ontime payment rises.
 
 #### DebtToIncomeRatio
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_DTI}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_DTI}
 summary(pd$DebtToIncomeRatio)
-ggplot(aes(x = DebtToIncomeRatio), data = subset(pd, !is.na(DebtToIncomeRatio))) + 
+ggplot(aes(x = DebtToIncomeRatio), 
+  data = subset(pd, !is.na(DebtToIncomeRatio))) + 
   geom_histogram(binwidth=0.1, fill = '#5760AB')
 
 ggplot(data=subset(pd, !is.na(DebtToIncomeRatio)),aes(x=DebtToIncomeRatio))+
@@ -226,7 +231,7 @@ ggplot(data=subset(pd, !is.na(DebtToIncomeRatio)),aes(x=DebtToIncomeRatio))+
 The DebtToIncomeRatio is an important feature in determining the credit score of a loan as it indicates the probability of default as the debt-to-income ratio increases. In this histogram, the ratio is 0.2 to 0.3 for more than 30000, the peak. It then declines, but there are few loans which have the ratio as 10, an unusually high number.
 
 #### IncomeRange 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Inc}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Inc}
 summary(pd$IncomeRange)
 ggplot(data=subset(pd, !is.na(IncomeRange)),aes(IncomeRange))+
   geom_bar(fill = '#78D20b') +
@@ -237,18 +242,19 @@ The IncomeRange histogram looks like a normally distributed one wih a large numb
 
 #### StatedMonthlyIncome
 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Sti}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Sti}
 summary(pd$StatedMonthlyIncome)
-ggplot(data=subset(pd, !is.na(StatedMonthlyIncome)),aes(StatedMonthlyIncome)) +       
-geom_histogram(binwidth=500, fill=I("#5760AB") ) + 
-xlim(0,10000)
-summary(pd$StatedMonthlyIncome)
+ggplot(data=subset(pd, !is.na(StatedMonthlyIncome)),
+  aes(StatedMonthlyIncome)) +       
+  geom_histogram(binwidth=500, fill=I("#5760AB") ) + 
+  xlim(0,10000)
+  summary(pd$StatedMonthlyIncome)
 ```
 
 The StatedMonthlyIncome also shows an approximate normal distribution, with monthly salary ranging from 0 to 175k. The median is 4667.
 
 #### BorrowerState
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_ST}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_ST}
 table(pd$BorrowerState)
 
 ggplot(subset(pd, !is.na(BorrowerState)),aes(x=BorrowerState))+
@@ -269,7 +275,7 @@ The borrowers are in large numbers from CA at more than 14000, hence I had to lo
 
 ### Loan
 #### Term
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Term}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Term}
 ggplot(data=subset(pd, !is.na(Term)),aes(Term)) + 
   geom_bar(color=I('blue'),fill=I('#5760AB'))
 summary(pd$Term)
@@ -278,7 +284,7 @@ summary(pd$Term)
 The loan terms are 3 categories, 12, 36 and 60 months with 36 being the most preferred loan term.
 
 #### MonthlyLoanPayment
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_MPay}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_MPay}
 ggplot(data=subset(pd, !is.na(MonthlyLoanPayment)),aes(MonthlyLoanPayment))+
   geom_histogram(binwidth=50,fill=I('#78D20b'))+
   scale_x_continuous(limits=c(0,2252),breaks=seq(0,2252,100))
@@ -288,7 +294,7 @@ Most monthly loan payments lie between 100 and 300, and then few are even above 
 
 #### LoanOriginalAmount
 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_LoanAmt}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_LoanAmt}
 ggplot(aes(x = LoanOriginalAmount), data = subset(pd, !is.na(LoanOriginalAmount))) + 
   geom_histogram(binwidth = 1000, fill = '#5760AB') 
 summary(pd$LoanOriginalAmount)
@@ -297,7 +303,7 @@ summary(pd$LoanOriginalAmount)
 The loans range from a minimum of 1000 to 35000, with median at 6500. 10000 and 15000 are popular loan amounts as well.
 
 #### LoanStatus
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Stat}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Stat}
 ggplot(data=subset(pd, !is.na(LoanStatus)),aes(LoanStatus))+
   geom_bar(color=I('black'),fill=I('#78D20b')) +
   theme(axis.text.x = element_text(face="bold", size=10, angle = 60, hjust = 1))
@@ -316,8 +322,9 @@ summary(pd$LoanStatus)
 The current status of the loan: Cancelled,  Chargedoff, Completed, Current, Defaulted, FinalPaymentInProgress, PastDue. The PastDue status will be accompanied by a delinquency bucket. Most loans are current, with 56k loans; more than 38k loans are completed. About 12k loans are chargedoff, there are 5k defaults and about 2k loans are past due for multiple durations.
 
 #### LoanMonthsSinceOrigination
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Age}
-ggplot(aes(LoanMonthsSinceOrigination), data = subset(pd, !is.na(LoanMonthsSinceOrigination))) + 
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Age}
+ggplot(aes(LoanMonthsSinceOrigination), 
+  data = subset(pd, !is.na(LoanMonthsSinceOrigination))) + 
   geom_histogram(binwidth = 3, fill = '#5760AB') 
 summary(pd$LoanMonthsSinceOrigination)
 ```
@@ -328,7 +335,7 @@ A large number of loansare relateively new with less than one year in age.
 ### Credit
 #### CreditScoreRangeLower and CreditScoreRangeUpper
 I will combine these 2 into a single variable and plot a histogram
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Credit}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_Credit}
 pd$CreditRange <- paste(pd$CreditScoreRangeLower,"_",pd$CreditScoreRangeUpper)
 ggplot(subset(pd, !is.na(CreditRange)), aes(reorder(CreditRange, -table(CreditRange)[CreditRange]))) + 
   geom_bar(fill=I('#78D20b')) + 
@@ -348,7 +355,7 @@ About 42% of loans have credit score between 640 and 740.
 About 6% of loans are to borrowers with credit below 600 or no credit rating at all. 
 
 #### BankCardUtilization
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_BC}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_BC}
 ggplot(subset(pd, !is.na(BankcardUtilization)),aes(BankcardUtilization)) + 
   geom_density() + xlim(c(0,2))
 
@@ -358,7 +365,7 @@ summary(pd$BankcardUtilization)
 BankCardUtilization measures the credit utilization when the credit was pulled, the median is 0.6. There are more than 7500 NAs, which means they were taking credit first time. The density plot shows peaks at 0 and 1.
 
 #### ProsperScore
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_PS}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_PS}
 summary(pd$ProsperScore)
 ggplot(aes(x = ProsperScore), data = subset(pd, !is.na(ProsperScore))) + 
   geom_histogram(binwidth = 1, fill = '#5760AB') 
@@ -368,7 +375,7 @@ A custom risk score built using historical Prosper data. The score ranges from 1
 The graph shows an almost normal distribution.
 
 ### CreditGrate and ProsperRating
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_PR}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Univar_PR}
 summary(pd$CreditGrade)
 summary(pd$ProsperRating..Alpha.)
 
@@ -417,8 +424,9 @@ For almost all variables I remove NA by default if any from the variable that I 
 
 I will be exploring the relationship among pairs of variables in this section. Beginning with a correlation matrix chart to get an idea in general about the relationship among variables I got me interested in the Univariate analysis section.
 
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/',  Bivar_corr}
-ggcorr(dplyr::select(pd, 5, 9, 16, 21, 26, 27, 30:38, 41, 42, 47, 50, 52, 54, 57, 58, 60, 62, 64, 81, 85), #9:18
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/',  Bivar_corr}
+ggcorr(dplyr::select(pd, 5, 9, 16, 21, 26, 27, 30:38, 41, 42, 47, 50, 52, 54, 
+                     57, 58, 60, 62, 64, 81, 85), #9:18
        low = "darkgreen", mid = "white", high = "darkblue", label = FALSE, 
        angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
   ggtitle("Correlation Matrix")
@@ -427,13 +435,15 @@ ggcorr(dplyr::select(pd, 5, 9, 16, 21, 26, 27, 30:38, 41, 42, 47, 50, 52, 54, 57
 
 The generated graph is extremely busy but I am able to identify some of the variables which don't show much correlation with others. Variables such as Term, EmploymentStatusDuration, ProsperScore, LoanCurrentDaysDelinquent, DelinquenciesLast7Years, ProsperPrincipalOutstanding are not showing correlation with others and hence I removed them in the following correlation matrix to reduce the density of information in the matrix.
 
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_corr1}
+```{r echo=TRUE, fig.path='figure/', warning=FALSE, cache=TRUE, cache.path='cache/'}
 #MeanCreditScore, ProsperCreditRating
 
 # Correlation matrix among numerical variables
-ggcorr(dplyr::select(pd, 9, 26, 27, 30:35, 37, 41, 42, 47, 50, 52, 54, 57, 62, 64, 81, 85), #9:18
+ggcorr(dplyr::select(pd, 9, 26, 27, 30:35, 37, 41, 42, 47, 50, 52, 54, 57, 62,
+                     64, 81, 85), #9:18
        low = "darkgreen", mid = "white", high = "darkblue", label = FALSE, 
-       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2, geom = "circle") +
+       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2, 
+       geom = "circle") +
   ggtitle("Correlation Matrix")
 ```
 
@@ -444,7 +454,7 @@ On the negative correlation front, variables BorrowerRate, MeanCreditScore show 
 In my analysis further I will also include the categorical variables along with continuous ones.
 
 #### MeanCreditScore vs LoanOriginalAmount
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Loan}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Loan}
 cor.test(pd$MeanCreditScore, pd$LoanOriginalAmount)
 ggplot(aes(x = LoanOriginalAmount, y = MeanCreditScore),
        data = subset(pd, !is.na(LoanOriginalAmount))) +
@@ -461,7 +471,7 @@ ggplot(aes(x=LoanOriginalAmount, y=MeanCreditScore),
 We can observe a general increasing trend of MeanCreditScore as the LoanOriginalAmount increases. The loan amount is square root transformed. Although the graph shows lot of variation in Credit Score for most of the loan amounts, except the very high ones. At high loan amounts the Credit Scores are found to be among the highest.
 
 #### MeanCreditScore vs BorrowerRate
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Rate}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Rate}
 cor.test(pd$MeanCreditScore, pd$BorrowerRate)
 
 ggplot(aes(x = BorrowerRate, y = MeanCreditScore),
@@ -485,7 +495,7 @@ The chart shows a negative relation, except when the interest rate is less than 
 The facet wrap graph histogram shows an approximate normal distribution for loan counts in 650 to 750 range and for higher credit scores the distribution is right skewed due to lower rate charged for them.
 
 #### MeanCreditScore vs DebtToIncomeRatio
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_DTI}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_DTI}
 cor.test(pd$MeanCreditScore, pd$DebtToIncomeRatio)
 
 ggplot(aes(x = DebtToIncomeRatio, y = MeanCreditScore),
@@ -505,7 +515,7 @@ I see a very small negative correlation and no strong relationship between DebtT
 Changing the gears a bit, I compare the newly created Occupation_new categorical variable with the StatedMonthlyIncome to understand whether my intuition regarding categorization on multiple occupation categories in the dataset was correct or not.
 
 #### StatedMonthlyIncome vs Occupation_new
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Income}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Income}
 ggplot(data=subset(pd, !is.na(Occupation_new)),aes(x=Occupation_new,y=StatedMonthlyIncome))+
   geom_boxplot(aes(colour=Occupation_new)) +
   scale_y_log10() +
@@ -516,7 +526,7 @@ It can be observed from the box plot, that monthly income is highest for the Dis
 I will now try to pair the Occupation_new with MeanCreditScore to get a roughly similar relationship.
 
 #### MeanCreditScore vs Occupation_new
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Occup}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Occup}
 ggplot(data=subset(pd, !is.na(Occupation_new)),aes(x=Occupation_new,y=MeanCreditScore))+
   geom_boxplot(aes(colour=Occupation_new)) +
   coord_cartesian(ylim = c(600,800))
@@ -525,7 +535,7 @@ ggplot(data=subset(pd, !is.na(Occupation_new)),aes(x=Occupation_new,y=MeanCredit
 Filtering out the outliers, the box plots fpr MeanCreditScore show a similar relationship as was with the StatedMonthlyIncome. Although since the range for credit score is much lower than the income the differences aren't very clear looking at the 1st and 3rd quantiles of the box plots.
 
 #### MeanCreditScore vs ProsperCreditRating
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Rating}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Rating}
 ggplot(data=subset(pd, !is.na(ProsperCreditRating)),aes(x=ProsperCreditRating,y=MeanCreditScore))+
   geom_boxplot(aes(colour=ProsperCreditRating)) +
   coord_cartesian(ylim = c(600,800)) +
@@ -546,7 +556,7 @@ I charted two different types of graphs, a box plot and a facet wrap. In the box
 The facet chart shows an approximate normal distribution for ProsperCreditRating categories for  MeanCreditScore present in the range 650 to 750. At higher credit score we can see the distribution tending to be right skewed due to dwindling number with poor Prosper ratings at higher MeanCreditScore.
 
 #### MonthlyLoanPayment vs MeanCreditScore
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Payment}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Payment}
 cor.test(pd$MeanCreditScore, pd$MonthlyLoanPayment)
 
 ggplot(aes(x = MonthlyLoanPayment, y = MeanCreditScore),
@@ -565,9 +575,10 @@ ggplot(data = subset(pd, !is.na(MonthlyLoanPayment)),
 The correlation shows a value of around 0.3 which is also reflected in the 2 charts that follow.
 
 #### MeanCreditScore vs Term
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Term}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Term}
 cor.test(pd$MeanCreditScore, pd$Term)
-ggplot(data = subset(pd, !is.na(Term)), aes(x = as.factor(Term), y = MeanCreditScore)) +
+ggplot(data = subset(pd, !is.na(Term)), 
+  aes(x = as.factor(Term), y = MeanCreditScore)) +
   geom_boxplot(aes(colour=Term)) + 
   scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
                                 quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
@@ -576,7 +587,7 @@ ggplot(data = subset(pd, !is.na(Term)), aes(x = as.factor(Term), y = MeanCreditS
 The correlation is very low at 0.12. The box plot shows that for loans of shorter term as well as longer term the MeanCreditScore is higher, with a greater inter-quartile range for 12 month term. The loan term of 36 months is much larger in number of loans and correlate with a larger range of credit score even though the interquartile range is smaller.
 
 #### MeanCreditScore vs LoanStatus
-```{r echo=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Status}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path= 'cache/', fig.path='figure/', Bivar_Status}
 ggplot(data = subset(pd, !is.na(LoanStatus)), aes(x = as.factor(LoanStatus), y = MeanCreditScore)) +
   geom_boxplot(aes(colour=LoanStatus)) + 
   scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
@@ -588,7 +599,7 @@ ggplot(data = subset(pd, !is.na(LoanStatus)), aes(x = as.factor(LoanStatus), y =
 The categorical variable LoanStatus shows an obvious relationship with MeanCreditScore. The credit score is high for Current and Completed loans. But for Charged-off and Defaulted loans are clearly lower. The Past Due categories are flat across the 6 past due categories. An interesting thing to note is that for FinalPaymentInProgress and Completed loans the credit scores are lower than Current loans.
 
 #### MeanCreditScore vs BankcardUtilization
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivar_Bankcard}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivar_Bankcard}
 summary(pd$BankcardUtilization)
 cor.test(pd$MeanCreditScore, pd$BankcardUtilization)
 ggplot(subset(pd, !is.na(BankcardUtilization)),aes(x=BankcardUtilization, y=MeanCreditScore))+
@@ -602,10 +613,11 @@ ggplot(subset(pd, !is.na(BankcardUtilization)),aes(x=BankcardUtilization, y=Mean
 A slight negative trend is visible for the greater usage of the credit brings down the credit score.
 
 #### MeanCreditScore vs OpenRevolvingMonthlyPayment
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivar_Revol}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivar_Revol}
 summary(pd$OpenRevolvingMonthlyPayment)
 cor.test(pd$MeanCreditScore, pd$OpenRevolvingMonthlyPayment)
-ggplot(subset(pd, !is.na(BankcardUtilization)),aes(x=OpenRevolvingMonthlyPayment, y=MeanCreditScore))+
+ggplot(subset(pd, !is.na(BankcardUtilization)),
+       aes(x=OpenRevolvingMonthlyPayment, y=MeanCreditScore))+
   xlim(quantile(pd$OpenRevolvingMonthlyPayment,0.05, na.rm=T), 
        quantile(pd$OpenRevolvingMonthlyPayment,0.95, na.rm=T))+
   geom_point(alpha=0.05)+
@@ -624,7 +636,7 @@ ggplot(aes(x = OpenRevolvingMonthlyPayment, y = MeanCreditScore),
 A slight positive trend is visible here, signifying that an increase in revolving monthly payment results in higher credit usage and hence lower credit score.
 
 #### MeanCreditScore vs LoanMonthsSinceOrigination
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivar_DT}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivar_DT}
 
 ggplot(aes(x = LoanMonthsSinceOrigination, y = MeanCreditScore),
        data = subset(pd, !is.na(LoanMonthsSinceOrigination))) +
@@ -657,47 +669,116 @@ Relationship of BorrowerRate with MeanCreditScore showed the strongest relations
 
 # Multivariate Plots Section
 
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivariate_Plots}
+#### MeanCreditScore, BorrowerRate, ProsperCreditRating
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivar_1}
+ggplot(data = subset(pd, !is.null(ProsperCreditRating)), 
+       aes(x = BorrowerRate, y = MeanCreditScore)) +
+  coord_cartesian(xlim = c(quantile(pd$BorrowerRate, 0.025, na.rm=T), 
+                           quantile(pd$BorrowerRate, 0.975,na.rm=T)),
+                  ylim = c(quantile(pd$MeanCreditScore, 0.025,na.rm=T),
+                           quantile(pd$MeanCreditScore, 0.975,na.rm=T))) +
+  geom_smooth(aes(color=ProsperCreditRating)) + facet_wrap(~pd$Term)
+```
+Since 36 month term loans are more in number we can see the range of BorrowerRates covered is greater.
+This plot shows an interesting finding that for higher credit ratings, which correspond to higher credit scores the plot with borrower rate is flat, where as for lower credit rated loans, if the borrower rate is higher the scores tend to be higher and vice versa. Hence if a lower credit rated loan is charged a higher rate then the credit scores would also increase. Now I'll replace credit rating with Occupation_new and see the trend.
+
+#### MeanCreditScore, BorrowerRate, Occupation_new
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivar_2}
+ggplot(data = subset(pd, !is.null(Occupation_new)), 
+       aes(x = BorrowerRate, y = MeanCreditScore)) +
+  coord_cartesian(xlim = c(quantile(pd$BorrowerRate, 0.025, na.rm=T), 
+                           quantile(pd$BorrowerRate, 0.975,na.rm=T)),
+                  ylim = c(quantile(pd$MeanCreditScore, 0.025,na.rm=T),
+                           quantile(pd$MeanCreditScore, 0.975,na.rm=T))) +
+  geom_smooth(aes(color=Occupation_new))
+
+ggplot(data = subset(pd, !is.null(Occupation_new)), 
+       aes(x = BorrowerRate, y = MeanCreditScore)) +
+  coord_cartesian(xlim = c(quantile(pd$BorrowerRate, 0.025, na.rm=T), 
+                           quantile(pd$BorrowerRate, 0.975,na.rm=T)),
+                  ylim = c(quantile(pd$MeanCreditScore, 0.025,na.rm=T),
+                           quantile(pd$MeanCreditScore, 0.975,na.rm=T))) +
+  geom_smooth(aes(color=Occupation_new)) + facet_wrap(~IncomeRange)
+```
+Most of the categories show a similar trend, except the Other (most loans in this Occupation category) which shows a dip in credit score till about 0.26 borrower rate and then a rise. For others as the borrower rate increases the credit score decreases. Student category is clearly lower compared to others which are grouped closely together in the plot.
+
+In the 2nd plot I further divide the plots using income ranges, Students are dominant in 0-25k income range. Interestingly there is nothing plotted in 75-100k income range.
+
+#### MeanCreditScore, LoanOriginalAmount and ProsperCreditRating
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivar_3}
 
 ggplot(aes(x = MeanCreditScore, y = LoanOriginalAmount),
-       data = subset(pd, !is.na(ProsperCreditRating))) +
+       data = subset(pd, !is.missing(ProsperCreditRating))) +
   scale_y_sqrt()+
-  geom_line(aes(color=ProsperCreditRating), stat='summary', fun.y=median)
+  geom_line(aes(color=ProsperCreditRating), stat='summary', fun.y=median) +
+  geom_smooth(aes(color=ProsperCreditRating), fun.y=median) +
+  coord_cartesian(xlim = c(400,850))  
 
-ggplot(data=pd,aes(x=ProsperCreditRating,y=BorrowerRate))+
-  geom_boxplot(aes(colour=ProsperCreditRating))
-
-ggplot(data=pd,aes(x=ProsperCreditRating,y=MeanCreditScore))+
-  geom_boxplot(aes(colour=ProsperCreditRating)) +
-  coord_cartesian(ylim = c(400,850))
-
-ggplot(data = pd, aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
-#  coord_cartesian(xlim = c(quantile(pd$LoanOriginalAmount, 0.025), 
-#                           quantile(pd$LoanOriginalAmount, 0.975)),
-#                  ylim = c(quantile(pd$BorrowerRate, 0.025),
-#                           quantile(pd$BorrowerRate, 0.975))) +
+ggplot(data = subset(pd, !is.null(ProsperCreditRating)), 
+       aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
+  coord_cartesian(xlim = c(quantile(pd$LoanOriginalAmount, 0.025, na.rm=T), 
+                           quantile(pd$LoanOriginalAmount, 0.975, na.rm=T)),
+                  ylim = c(quantile(pd$MeanCreditScore, 0.025, na.rm=T),
+                           quantile(pd$MeanCreditScore, 0.975, na.rm=T))) +
   geom_smooth(aes(color=ProsperCreditRating)) +
-  scale_x_sqrt()
+  theme(axis.text.x = element_text(face="bold", size=10, angle = 60, hjust = 1)) +
+  scale_x_sqrt() + facet_wrap(~Term)
 
 ```
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+
+In the couple of charts above I tried to triangulate between 3 variables. The first plot is a line plot of different credit ratings, plotting loan amount vs credit scores. The geom_smooth helps to understand the trends in the busy plot and the trends are obvious and clearly visible.
+
+#### MeanCreditScore, LoanOriginalAmount by EmploymentStatus
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivar_4}
+
+ggplot(aes(y = MeanCreditScore, x = LoanOriginalAmount),
+       data = subset(pd, !is.missing(EmploymentStatus))) +
+  scale_x_sqrt()+
+  geom_line(aes(color=EmploymentStatus), stat='summary', fun.y=median) +
+  geom_smooth(aes(color=EmploymentStatus), fun.y=median) +
+  coord_cartesian(ylim = c(400,850)) 
 ```
+
+Full-time, Employed and Other categories seem to be getting higher loan amounts and are having higher credit scores. Although Self-employed and Not-available categories have limited access to loan amount beyond around 250k, their median credit scores tend to be slightly higher than other categories.
+
+#### MeanCreditScore, StatedMonthlyIncome, EmploymentStatus, Term
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Multivar_5}
+ggplot(aes(y = MeanCreditScore, x = StatedMonthlyIncome),
+       data = subset(pd, !is.missing(EmploymentStatus))) +
+  geom_smooth(aes(color=EmploymentStatus), fun.y=median) +
+  coord_cartesian(xlim = c(quantile(pd$StatedMonthlyIncome, 0.025, na.rm=T), 
+                           quantile(pd$StatedMonthlyIncome, 0.975, na.rm=T)),
+                  ylim = c(quantile(pd$MeanCreditScore, 0.025, na.rm=T),
+                           quantile(pd$MeanCreditScore, 0.975, na.rm=T))) +
+  facet_wrap(~Term)
+
+```
+
+In the plot above I have tried to see the relation between monthly income, credit score based on employment status and term of the loan. I limited the x and y axes to remove extreme outliers seen in the StatedMonthlyIncome. The credit score can be seen to rise with with income. Full-time and employed tend to have a higher score even for lower salaries due to stability of cash flow to service the loan. The curves are not relatively flat for other categories showing a sharper rise with the income. The variance in slope of different employment status is not as big in loan categories 12 and 60 months.
 
 # Multivariate Analysis
 
 ### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
 
+In this section of the project I tried to bring together multiple variables of interest and see relations among 3-4 variables at a time and understand finer nuances of interplay among them. Since the MeanCreditScore is the main variable of my interest, it almost always occupied the y axis. I checked BorrowerRate, LoanOriginalAmount, and StatedMonthlyIncome against the MeanCreditScore and further added catagorical variables such as ProsperCreditRating, EmploymentStatus, IncomeRange, Term and Occupation_new.
+In most plots my previous understanding about relationships among the variables was reaffirmed. 
+
 ### Were there any interesting or surprising interactions between features?
 
-### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+Some of the interesting findings were as below:
+I observed sharp rise in credit score, when borrower rate was increased for poorly rated loans.
+A similar sharp rise is observed whtn monthly income is increase for poorly rated loans.
+The 'Other' category in Occupation_new showed a strange U pattern as the borrower rate was increased. I think this category should be broken down furhter to analyze the reason for this behavior.
+Not all employment status categories were granted loans of value greater than 250k
 
+### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
 
 ------
 
 # Final Plots and Summary
 #### Tip: Polish up the plots that you explored earlier in the report in the final plots section. Make sure you label and title the plots, and provide a description of what can be observed in each of the chosen plots.
 ### Plot One
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_One}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_One}
 
 ```
 
@@ -705,7 +786,7 @@ ggplot(data = pd, aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
 
 
 ### Plot Two
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_Two}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_Two}
 
 ```
 
@@ -713,7 +794,7 @@ ggplot(data = pd, aes(x = LoanOriginalAmount, y = MeanCreditScore)) +
 
 
 ### Plot Three
-```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_Three}
+```{r echo=TRUE, warning=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Plot_Three}
 
 ```
 
