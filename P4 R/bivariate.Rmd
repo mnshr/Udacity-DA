@@ -27,6 +27,13 @@ library(memisc)
 library(scales)
 library(pander)
 library(knitr)
+
+#Subsets data according to the proportion required
+subSetter <- function(x, col, fraction) {
+  subs <- quantile(x[[col]], probs=fraction)
+  mydata <- subset(x, x[[col]] < subs)
+  return (mydata)
+}
 ```
 # Bivariate Plots Section
 
@@ -47,7 +54,7 @@ The generated graph is extremely busy but I am able to identify some of the vari
 # Correlation matrix among numerical variables
 ggcorr(dplyr::select(pd, 9, 26, 27, 30:35, 37, 41, 42, 47, 50, 52, 54, 57, 62, 64, 81, 86), #9:18
        low = "darkgreen", mid = "white", high = "darkblue", label = TRUE, 
-       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2) +
+       angle = -15, size = 4, hjust = 0.9, label_round = 2, layout.exp = 2, geom = "circle") +
   ggtitle("Correlation Matrix")
 ```
 There are some interesting observations in the graph above. First of all we can ignore the correlation of 1 among MeanCreditScore and the 2 CreditScoreRange [Upper/Lower] variables, since the mean is derived from the 2. The 4 variables, OpenRevolvingMonthlyPayment, OpenRevolvingAccounts, OpenCreditLines and TotalCreditLinesPast7Years are all strongly related to each other ranging from 0.5 to 0.82
@@ -65,6 +72,10 @@ ggplot(aes(x = LoanOriginalAmount, y = MeanCreditScore),
   geom_line(stat='summary', fun.y=median, fun.x=median) +
   coord_cartesian(ylim = c(400,850)) + 
   geom_smooth()
+
+ggplot(aes(x=LoanOriginalAmount, y=MeanCreditScore), 
+       data=pd) + #subSetter(pd,"LoanOriginalAmount", 0.95)) +
+  geom_jitter(alpha=0.20, aes(color=ProsperCreditRating)) 
 ```
 We can observe a general increasing trend of MeanCreditScore as the LoanOriginalAmount increases. The loan amount is square root transformed. Although the graph shows lot of variation in Credit Score for most of the loan amounts, except the very high ones. At high loan amounts the Credit Scores are found to be among the highest.
 
@@ -188,11 +199,24 @@ MeanCreditScore vs BankcardUtilization
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 summary(pd$BankcardUtilization)
 cor.test(pd$MeanCreditScore, pd$BankcardUtilization)
+ggplot(pd,aes(x=BankcardUtilization, y=MeanCreditScore))+
+  xlim(quantile(pd$BankcardUtilization,0.05, na.rm=T), 
+       quantile(pd$BankcardUtilization,0.95, na.rm=T))+
+  geom_point(alpha=0.05)+
+  geom_smooth(method = 'lm', color= 'red')
 
 ```
+Negative trend is visible
 
+MeanCreditScore vs LoanOriginationDate
+```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
+ggplot(data = subset(pd, !is.na(ProsperCreditRating)), 
+       aes(x = LoanOriginationDate, y = MeanCreditScore)) +
+      geom_smooth()
+```
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 ```
+
 ##############
 
 ```{r echo=FALSE, cache=TRUE, cache.path s= 'cache/', fig.path='figure/', Bivariate_Plots}
@@ -259,7 +283,6 @@ qplot(data= pd, x = BorrowerRate) +
 ```{r echo=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', Bivariate_Plots}
 qplot(data= pd, x = ProsperCreditRating) +
   facet_wrap(~CreditRange)
-
 
 ggplot(data = subset(pd, ListingCategory..numeric. == 1 & 
                              ListingCategory..numeric. != 0), 
