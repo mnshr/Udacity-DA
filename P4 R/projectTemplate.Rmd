@@ -12,6 +12,12 @@ I will perform three types of analyses, Univariate, Bivariate and Multivariate
 using preselected variables among the 81 that are part of the dataset and
 reflect on my findings in the concluding section. 
 
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, 
+                      cache.path='cache/', fig.path='figure/')
+
+```
+
 ```{r echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, cache.path = 'cache/', fig.path='figure/', packages}
 
 # Load all of the packages that you end up using
@@ -28,8 +34,6 @@ library(grid)
 library(gtable)
 library(gridExtra)
 library(lattice)
-knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE, cache=TRUE, 
-                      cache.path='cache/', fig.path='figure/')
 ```
 ### Here is a summary of the dataset
 ```{r Load_the_Data}
@@ -75,8 +79,10 @@ From the box plot we can see some relatively higher rates (max at 0.5%), althoug
 
 Univar_Occup_plot <- ggplot(data=pd,aes(Occupation))+
   geom_bar() +
-  scale_y_log10()+  
+  scale_y_log10()
+  
 unique(pd$Occupation)
+
 Univar_Occup_plot + coord_flip()
 pd <- mutate(pd, Occupation_new = ifelse(Occupation %in% 
                                            c("Engineer - Mechanical",
@@ -474,20 +480,19 @@ summary(pd$ProsperScore)
 A custom risk score built using historical Prosper data. The score ranges from 1-10, with 10 being the best, or lowest risk score.  Applicable for loans originated after July 2009.
 The graph shows an almost normal distribution and no outliers in the box plot.
 
-### CreditGrate and ProsperRating
+### CreditGrade and ProsperRating
 ```{r Univar_PR}
-
 pd$ProsperCreditRating <- as.factor(ifelse(pd$ProsperRating..Alpha. == "", 
                    as.character(pd$CreditGrade), 
                    as.character(pd$ProsperRating..Alpha.)))
 
-ggplot(aes(x = ProsperCreditRating), data = 
+ggplot(data = 
          subset(pd, ProsperCreditRating!="")) + 
+  aes(x=ProsperCreditRating) +
   geom_bar(fill = '#78D20b') 
 
 summary(pd$CreditGrade)
 summary(pd$ProsperRating..Alpha.)
-
 ```
 
 I have combined the 2 pre2009 and post2009 credit rating measures in the dataset to a new feature called ProsperCreditRating. After plotting a histogram of the same w can see that most of the loans belong to Ratings, B, C and D which is not unusual.
@@ -659,7 +664,8 @@ ggplot(data=subset(pd, ProsperCreditRating!=""),
   theme(legend.position="none" ) +
   coord_cartesian(ylim = c(600,800)) +
     scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
-                                quantile(pd$MeanCreditScore, 0.95, na.rm=T)))
+                                quantile(pd$MeanCreditScore, 0.95, na.rm=T))) +
+  scale_color_brewer(palette="YlOrRd")
 
 qplot(data= subset(pd, !is.na(MeanCreditScore)), x = ProsperCreditRating) +
   theme(axis.text.x = 
@@ -738,13 +744,14 @@ The categorical variable LoanStatus shows an obvious relationship with MeanCredi
 #### MeanCreditScore vs IncomeRange
 ```{r Bivar_Inc}
 ggplot(data = subset(pd, !is.na(IncomeRange)), 
-       aes(x = IncomeRangeOrd, y = MeanCreditScore)) +
-  geom_boxplot(aes(colour=IncomeRange)) + 
+       aes(x = IncomeRangeOrd, y = MeanCreditScore, color=IncomeRangeOrd)) +
+  geom_boxplot() + 
   scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
                               quantile(pd$MeanCreditScore, 0.95, na.rm=T))) +
   theme(axis.text.x = 
           element_text(face="bold", size=10, angle = 60, hjust = 1),
-        legend.position="none")
+        legend.position="none") + 
+  scale_color_brewer(palette="YlOrRd")
 
 ```
 
@@ -1004,18 +1011,20 @@ p11 <- ggplot(data = subset(pd, !is.na(Term)),
   ylab("Credit Score") +
   xlab("Term [months]") +
   guides(fill=FALSE) +
-  scale_fill_brewer(palette="RdBu") #GnBU
+  scale_color_brewer(palette="RdBu") #GnBU
 
 p12 <- ggplot(data = subset(pd, ProsperCreditRating!=""), 
   aes(x = as.factor(ProsperCreditRating), y = MeanCreditScore, 
-      fill=as.factor(ProsperCreditRating))) +
+      color=ProsperCreditRating), legend.position="none")+
+      #fill=as.factor(ProsperCreditRating)) +
   geom_boxplot() + 
   scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
                                 quantile(pd$MeanCreditScore, 0.95, na.rm=T))) +
   ggtitle("Credit Scores by CreditRating") +
   ylab("Credit Score") +
   xlab("Credit Rating") +
-  guides(fill=FALSE)
+  guides(fill=FALSE) +
+  scale_color_brewer(palette="Spectral")
 
 p13 <- ggplot(data = subset(pd, !is.na(IsBorrowerHomeowner)), 
   aes(x = as.factor(IsBorrowerHomeowner), y = MeanCreditScore, 
@@ -1029,16 +1038,18 @@ p13 <- ggplot(data = subset(pd, !is.na(IsBorrowerHomeowner)),
   guides(fill=FALSE)
 
 p14 <- ggplot(data = subset(pd, !is.na(IncomeRange)), 
-  aes(x = IncomeRangeOrd, y = MeanCreditScore, 
-      fill=as.factor(IncomeRange))) +
+  aes(x = IncomeRangeOrd, y = MeanCreditScore, color=IncomeRangeOrd)) +
+      #fill=as.factor(IncomeRangeOrd))) +
   geom_boxplot() + 
   scale_y_continuous(limits = c(quantile(pd$MeanCreditScore, 0.05, na.rm=T), 
                                 quantile(pd$MeanCreditScore, 0.95, na.rm=T))) +
-  theme(axis.text.x = element_text(size=10, angle = 60, hjust = 1)) +
+  theme(axis.text.x = element_text(size=10, angle = 60, 
+                                   hjust = 1), legend.position="none") +
   ggtitle("Credit Scores by Income Range") +
   ylab("Credit Score") +
   xlab("Income Range [$]") +
-  guides(fill=FALSE)
+  #guides(fill=FALSE) +
+  scale_colour_brewer(palette = "YlOrRd")
 
 grid.arrange(p11, p12,
             top = "Credit Scores from Categorical Variable Perspective" )
@@ -1057,20 +1068,22 @@ p21 <- ggplot(aes(x=BorrowerRate, y=MeanCreditScore),
        data=subset(pd, !is.na(BorrowerRate))) + 
   geom_jitter(alpha=0.20, aes(color=IncomeRangeOrd)) +
   scale_colour_manual(values=secPalette) +
-  geom_smooth(aes(color=IncomeRangeOrd)) +
+  geom_smooth(aes(color=IncomeRangeOrd), se=FALSE) +
   ylab("Credit Score") +
   xlab("Borrower Rate [%]") +
   ggtitle("Credit Scores by Borrower Rate for different Income Ranges") +
-  coord_cartesian(xlim = c(0,0.37)) 
+  coord_cartesian(xlim = c(0,0.37)) +
+  scale_colour_brewer(palette = "Spectral")
 
 p22 <- ggplot(aes(x=MonthlyLoanPayment, y=MeanCreditScore), 
        data=subset(pd, !is.na(MonthlyLoanPayment))) + 
   geom_jitter(alpha=0.20, aes(color=IncomeRangeOrd)) +
   scale_colour_manual(values=secPalette) +
-  geom_smooth(aes(color=IncomeRangeOrd)) +
+  geom_smooth(aes(color=IncomeRangeOrd), se=FALSE) +
   ylab("Credit Score") +
   xlab("Monthly Payment [$]") +
-  ggtitle("Credit Scores by Monthly Payments for different Income Ranges") 
+  ggtitle("Credit Scores by Monthly Payments for different Income Ranges") +
+  scale_colour_brewer(palette = "Spectral")
 
 grid.arrange(p21, p22, 
              top = "Credit Scores from Categorical Variable Perspective")
@@ -1085,7 +1098,6 @@ In the 2nd plot in the grid, the increase in monthly payment helps the credit sc
 
 ### Plot Three
 ```{r Plot_Three, fig.height=9, fig.width=11}
-thPalette <- c("#000000", "#0000FF", "#00FF00", "#00FFFF", "#FF0000", "#F0F0F0", "#FF00FF", "#FFFF00", "#FFFFFF")
 # Subset the data with for non-null credit ratings
 #ndpd=subset(pd, !is.null(pd$ProsperCreditRating))
 ndpd=subset(subset(pd, ProsperCreditRating!=""), 
@@ -1098,12 +1110,14 @@ ggplot(data = ndpd,
                   ylim = 
                     c(quantile(ndpd$MeanCreditScore, 0.075,na.rm=T),
                     quantile(ndpd$MeanCreditScore, 0.925,na.rm=T))) +
-  scale_colour_manual(values=thPalette) +
-  geom_smooth(aes(color=ProsperCreditRating)) + 
-  facet_wrap(~IncomeRangeOrd) +
+  #scale_colour_manual(palette="spectral") +
+  scale_colour_brewer(palette = "Spectral") +
+  geom_smooth(aes(color=ProsperCreditRating), se=FALSE) + 
+  facet_wrap(~IncomeRange) +
   ylab("Credit Score") +
   xlab("Loan Age [Months]") +
 ggtitle("Credit Scores by Loan Age for difft Credit Ratings and Income Ranges")
+  
 ```
 
 ### Description Three
