@@ -31,7 +31,7 @@ body {
 /* Positioning the dropdown content */
 .dropdown {
     position: absolute;
-    margin-top:720px;
+    margin-top:748px;
     bottom: 20;
     display: inline-block;
 }
