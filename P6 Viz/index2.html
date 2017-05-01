@@ -3,104 +3,15 @@
 
   <head>
     <meta charset='utf-8'>
-    <style> 
-
-    body { font: 12px Arial;}
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: grey;
-        stroke-width: 1;
-        shape-rendering: crispEdges;
-    }
-
-    /* Dropdown */
-    .dropbtn {
-        background-color: #4CAF50;
-        color: white;
-        padding: 16px;
-        font-size: 16px;
-        border: none;
-        cursor: pointer;
-    }
-    /* Dropdown 2nd */
-    .dropbtn1 {
-        background-color: #4CA1A0;
-        color: white;
-        padding: 16px;
-        font-size: 16px;
-        border: none;
-        cursor: pointer;
-    }
-    /* Positioning the dropdown content */
-    .dropdown {
-        position: absolute;
-        margin-top:680px;
-        bottom: 20;
-        display: inline-block;
-    }
-    /* Position the 2nd dropdown content */
-    .dropdown1 {
-        position: absolute;
-        margin-top:1300px;
-        bottom: 20;
-        display: inline-block;
-    }
-    /* Dropdown Content */
-    .dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    }
-
-    /* Links inside the dropdown */
-    .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-    }
-
-    /* Color of dropdown links changed on hover */
-    .dropdown-content a:hover {background-color: #f1f1f1}
-
-    /* Dropdown menu on hover */
-    .dropdown:hover .dropdown-content {
-        display: block;
-        bottom: 100%;
-    }
-    .dropdown1:hover .dropdown-content {
-        display: block;
-        bottom: 100%;
-    }
-
-    /* Color of the dropdown button changed when the dropdown content is shown */
-    .dropdown:hover .dropbtn {
-        background-color: #3e8e41;
-    }
-   .dropdown1:hover .dropbtn {
-        background-color: #3e824F;
-    }
-</style>
+    
+    <link rel="stylesheet" href="./css/p6.css">
 
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Data visualization with d3.js : Udacity Data Analyst Project 6">
     <title>Project 6 - Data Visualization </title>
     <script src="js/d3.min.js"></script>
     <script src="js/dimple.v2.1.6.min.js"></script>
-
-    <style>
-      .chart div {
-        font: 10px sans-serif;
-        background-color: steelblue;
-        text-align: right;
-        padding: 3px;
-        margin: 1px;
-        color: white;
-      }
-    </style>
+    <style> body { font: 12px Arial;} </style>
   </head>
     <div class="dropdown">
         <button class="dropbtn">Rating Type</button>
@@ -109,15 +20,6 @@
             <a href="#drop2" onclick="AverageAmt_Cr()">Average Loan Amount</a>
             <a href="#drop3" onclick="AverageDTI_Cr()">Average Debt to Income Ratio</a>
             <a href="#drop4" onclick="AverageIncome_Cr()">Average Stated Income</a>
-        </div>
-    </div>
-    <div class="dropdown1">
-        <button class="dropbtn1">Loan Type</button>
-        <div class="dropdown-content">
-            <a href="#drop1" onclick="AverageLoan_Cat()">Number of Loans</a>
-            <a href="#drop2" onclick="AverageAmt_Cat()">Average Loan Amount</a>
-            <a href="#drop3" onclick="AverageDTI_Cat()">Average Debt to Income Ratio</a>
-            <a href="#drop4" onclick="AverageIncome_Cat()">Average Stated Income</a>
         </div>
     </div>
   <body>
