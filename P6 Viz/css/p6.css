@@ -1,0 +1,78 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Apr 30 22:57:10 2017
+
+@author: mnshr
+"""
+
+body { 
+        font-family: Arial
+        font: 11px;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+/* Dropdown */
+.dropbtn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Positioning the dropdown content */
+.dropdown {
+    position: absolute;
+    margin-top:720px;
+    bottom: 20;
+    display: inline-block;
+}
+/* Dropdown Content */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Color of dropdown links changed on hover */
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+/* Dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+    bottom: 100%;
+}
+
+/* Color of the dropdown button changed when the dropdown content is shown */
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+   .dropdown1:hover .dropbtn {
+    background-color: #3e824F;
+}
+.chart div {
+    font: 10px sans-serif;
+    background-color: steelblue;
+    text-align: right;
+    padding: 3px;
+    margin: 1px;
+    color: white;
+}
