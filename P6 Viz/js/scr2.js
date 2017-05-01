@@ -24,7 +24,11 @@ d3.csv("grp_loans_by_credit.csv", function(dataset) {
 // Create header and description section for Number of Loans by Ratings
 var chart1_div = document.getElementsByClassName('row_chart1')[0];
 var html11 = '<div class="html11" id="html11"> \
-    <H4>Number of Loans:</H4> Here is my text on number of loans</div>';
+    <H4>Number of Loans by Rating:</H4> A couple of points can be observed in \
+    the chart below. First, over the years the Prosper platform seems to have \
+    become more popular. <br> Second observation is that the number of loans given to mid range \
+    categories such as B, C and D are higher in volume compared to <br> higher (A and AA) \
+    as well as lower range (E, NC or HR) categories.</div>';
 chart1_div.insertAdjacentHTML('afterbegin', html11);
 
 //Create the 2nd default chart
@@ -37,8 +41,7 @@ var tooltip2 = ["Not Available", "Debt Consolidation", "Home Improvement",
                   "Other", "Baby&Adoption", "Boat", "Cosmetic Procedure",
                    "Engagement Ring", "Green Loans", "Household Expenses", 
                    "Large Purchases", "Medical/Dental", "Motorcycle", "RV",
-                   "Taxes", "Vacation", "Wedding Loans"
-                   ];
+                   "Taxes", "Vacation", "Wedding Loans"];
 
 grp_loans_by_cat_chart_1.setBounds(60, 35, "70%", 350);
 var grp_loans_by_cat_x_chart1 = grp_loans_by_cat_chart_1.addCategoryAxis("x", "Time");
@@ -88,7 +91,11 @@ d3.csv("grp_loans_by_cat.csv", function(dataset) {
 // Create header and description section for Number of Loans by Loan Type
 var chart1_div = document.getElementsByClassName('row_chart2')[0];
 var html21 = '<div class="html21" id="html21"> \
-    <H4>Number of Loans by Loan Type: </H4> Here is my text on number of loans</div>';
+    <H4>Number of Loans by Loan Type: </H4> There are a large number of categories\
+     in this chart making it seem very busy. Highlighted in color are the top 6 while \
+     rest of them are greyed out. <br> Looks like before 2007 this data point was not \
+     gathered. After that we se a steady and distinctive rise in debt consolidation \
+     cateogry. <br>Other prominent ones are "Other", "Home Improvement" and "Business".</div>';
 chart1_div.insertAdjacentHTML('afterbegin', html21);
     
 
@@ -118,7 +125,11 @@ function AverageLoan_Cr() {
       });    
       // Update header section
       h11 = document.getElementById('html11')
-      h11.innerHTML="<H4>Number of Loans by Rating:</H4> Here is my text on number of loans";
+      h11.innerHTML="<H4>Number of Loans by Rating:</H4> A couple of points can be observed in \
+    the chart below. First, over the years the Prosper platform seems to have \
+    become more popular. <br> Second observation is that the number of loans given to mid range \
+    categories such as B, C and D are higher in volume compared to <br> higher (A and AA) \
+    as well as lower range (E, NC or HR) categories.";
 }
                 
 //Function called when a menu for Average loan amount is clicked
@@ -148,7 +159,12 @@ function AverageAmt_Cr() {
    });
    // Update header section
    h11 = document.getElementById('html11')
-   h11.innerHTML="<H4>Average Amounts by Rating:</H4> Here is my text on loan amounts";
+   h11.innerHTML="<H4>Average Amounts by Rating:</H4> When it comes to the amount \
+   loaned to borrowers, the role of credit rating becomes evident. <br> Better rating \
+   certainly helps get a better loan amount given the lower risk higher range \
+   category like AA of A offer. <br>Although there are a few exceptions to this observation\
+    during initial half of 2009 and in the Oct-Dec 2010 quarter. <br> The chart also \
+    shows a general positive trend over the years.";
 }
         
 //Function called when a menu for Average Debt to Income is clicked
@@ -178,7 +194,13 @@ function AverageDTI_Cr() {
        
     // Update header section
     h11 = document.getElementById('html11')
-    h11.innerHTML="<H4>Debt to Income by Rating:</H4> Here is my text on DTI";
+    h11.innerHTML="<H4>Debt to Income by Rating:</H4> This chart shows a sharp \
+    rise among all ratings till Apr-Jun 2007 and then a sharp fall. Although \
+    the slope of rise and fall is smaller for higher ratings such as AA and A. \
+    <br> After that the curves remain relaitvely flat and also tend to disperse\
+    with higher ratings having lower Debt to Income than lower ratings. \
+    <br> There seem to be outliers causing sharp rise for HR category in first half \
+     of 2013.";
 }
         
 //Function called when menu for Average income is clicked
@@ -207,5 +229,8 @@ function AverageIncome_Cr() {
     });
     // Update header section
     h11 = document.getElementById('html11')
-    h11.innerHTML="<H4>Average Income by Rating:</H4> Here is my text on Average Income";
+    h11.innerHTML="<H4>Average Income by Rating:</H4> This chart shows a general \
+    trend of fall in stated incomes till around 2009 and then a slow and steady rise.\
+    <br> For most of the period the higher ratings state higher earnings barring a couple\
+    of exceptions. The income gap seems to be widening although narrowly more recently.";
 }
