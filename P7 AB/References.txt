@@ -1,0 +1,25 @@
+Project Template
+https://docs.google.com/document/d/16OX2KDSHI9mSCriyGIATpRGscIW2JmByMd0ITqKYvNg/edit
+
+Rubric
+https://review.udacity.com/#!/rubrics/54/view
+
+Instructions 
+https://docs.google.com/document/u/1/d/1aCquhIqsUApgsxQ8-SQBAigFDcfWVVohLEXcV6jWbdI/pub?embedded=True
+
+Project Baseline
+https://docs.google.com/spreadsheets/d/1MYNUtC47Pg8hdoCjOXaHqF-thheGpUshrFA21BAJnNc/edit#gid=0
+
+Project Data
+https://docs.google.com/spreadsheets/d/1Mu5u9GrybDdska-ljPXyBjTpdZIUev_6i7t4LRDfXM8/edit#gid=0
+
+On Bonferroni Correction
+https://discussions.udacity.com/t/bonferroni-correction/201344/2
+https://en.wikipedia.org/wiki/Bonferroni_correction
+http://onlinelibrary.wiley.com/doi/10.1111/opo.12131/full
+
+The online calculator for sample size
+http://www.evanmiller.org/ab-testing/sample-size.html
+
+The online calculator for sign and binomial test 
+http://graphpad.com/quickcalcs/binomial1.cfm
